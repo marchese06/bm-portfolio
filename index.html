@@ -131,20 +131,23 @@
   <th data-col="name">Name</th>
   <th data-col="entry_date">Entry</th>
   <th data-col="contract">Contract</th>
+  <th data-col="strike">Strike</th>
+  <th data-col="contracts">Contracts</th>
   <th data-col="entry">Entry $</th>
-  <th data-col="current">Current $</th>
+  <th data-col="current">Now $</th>
   <th data-col="curr_pct">Return %</th>
   <th data-col="max">Max $</th>
   <th data-col="max_pct">Max %</th>
   <th data-col="sell_stages">Sells</th>
-  <th data-col="realized">Realized</th>
+  <th data-col="realized">Realized P</th>
   <th data-col="unrealized">Unrealized</th>
   <th data-col="total_pnl">Net P&L</th>
+  <th data-col="pnl_pct">P&L %</th>
   <th data-col="rem_pct">% Rem.</th>
   <th data-col="theme">Theme</th>
   <th data-col="status">Status</th>
 </tr></thead>
-<tbody id="tbody"><tr><td colspan="16"><div class="loading">Fetching live data...</div></td></tr></tbody>
+<tbody id="tbody"><tr><td colspan="19"><div class="loading">Fetching live data...</div></td></tr></tbody>
 </table>
 </div>
 <footer>
@@ -295,14 +298,38 @@ async function fetchAllPrices(trades){
 
 // ── P&L calculation ──────────────────────────────────────────────────────────
 function calcPnl(t){
-  const start=1000, mult=t.max/t.entry;
-  let realized=0, remUnits=1.0;
+  // ~$1,000 deployed per position. Track proceeds and cost per tranche.
+  const cost=1000, mult=t.max/t.entry;
+  let proceeds=0, costSold=0, remUnits=1.0;
   const stages=[];
-  if(mult>=2){realized+=1000;remUnits=0.5;stages.push('2x');
-    if(mult>=3){realized+=remUnits*3*start*0.75;remUnits*=0.25;stages.push('3x');
-      if(mult>=4){realized+=remUnits*4*start;remUnits=0;stages.push('4x');}}}
-  const unrealized = remUnits * (t.current/t.entry) * start;
-  return{realized:Math.round(realized),unrealized:Math.round(unrealized),total_pnl:Math.round(realized+unrealized-start),rem_pct:Math.round(remUnits*100),stages};
+
+  if(mult>=2){
+    // Sell 50% at 2x: proceeds = 0.5 * 2 * cost = $1,000 | cost of tranche = $500
+    proceeds += 0.5 * 2 * cost; costSold += 0.5 * cost; remUnits=0.5; stages.push('2x');
+    if(mult>=3){
+      // Sell 75% of remaining (37.5% of original) at 3x: proceeds = 0.375*3*cost | cost = 0.375*cost
+      proceeds += remUnits*0.75 * 3 * cost; costSold += remUnits*0.75 * cost; remUnits*=0.25; stages.push('3x');
+      if(mult>=4){
+        // Sell all remaining at 4x
+        proceeds += remUnits * 4 * cost; costSold += remUnits * cost; remUnits=0; stages.push('4x');
+      }
+    }
+  }
+
+  const realizedProfit = Math.round(proceeds - costSold);      // cash profit locked in
+  const unrealized = Math.round(remUnits * (t.current/t.entry) * cost);
+  const remainingCost = Math.round(remUnits * cost);           // cost still at risk
+  const total_pnl = Math.round(realizedProfit + unrealized - remainingCost); // net vs full $1k deployed
+  const pnl_pct = Math.round((total_pnl / cost) * 100);       // % of $1k invested
+
+  // contracts: whole number of contracts at $100/contract (each = 100 shares × entry price)
+  // Round down to stay within $1,000, but round up if overshoot is ≤ $100
+  const contractCost = t.entry * 100; // cost of 1 contract
+  const floored = Math.floor(cost / contractCost);
+  const ceiled  = floored + 1;
+  const contracts = (ceiled * contractCost - cost) <= 100 ? ceiled : floored;
+
+  return{realized:realizedProfit, unrealized, total_pnl, pnl_pct, rem_pct:Math.round(remUnits*100), stages, contracts};
 }
 
 const pC=v=>v>0?'pos':v<0?'neg':'dim';
@@ -312,7 +339,7 @@ const tColor=t=>TC[t.theme]||TC[t.sector]||'#888';
 
 // ── Load CSV ─────────────────────────────────────────────────────────────────
 async function loadData(){
-  document.getElementById('tbody').innerHTML='<tr><td colspan="16"><div class="loading">Fetching data from Google Sheets...</div></td></tr>';
+  document.getElementById('tbody').innerHTML='<tr><td colspan="19"><div class="loading">Fetching data from Google Sheets...</div></td></tr>';
   document.getElementById('error-area').innerHTML='';
   try{
     const res=await fetch(CSV_URL+'&t='+Date.now());
@@ -388,13 +415,13 @@ async function loadData(){
   }catch(err){
     document.getElementById('error-area').innerHTML=`<div class="error-box">⚠ ${err.message}</div>`;
     document.getElementById('metrics').innerHTML='';
-    document.getElementById('tbody').innerHTML='<tr><td colspan="16"><div class="empty">Could not load data.</div></td></tr>';
+    document.getElementById('tbody').innerHTML='<tr><td colspan="19"><div class="empty">Could not load data.</div></td></tr>';
     document.getElementById('price-status').textContent='error';
     document.getElementById('price-status').className='price-status error';
   }
 }
 
-async function loadAll(){ ALL=[]; await loadData(); }
+async function loadAll(){ ALL=[]; Object.keys(priceCache).forEach(k=>delete priceCache[k]); await loadData(); }
 
 // ── Metrics ──────────────────────────────────────────────────────────────────
 function buildMetrics(){
@@ -475,7 +502,7 @@ function render(){
   const d=getData();
   document.getElementById('cnt').textContent=d.length+' of '+ALL.length+' positions';
   const tb=document.getElementById('tbody');
-  if(!d.length){tb.innerHTML=`<tr><td colspan="16"><div class="empty">No positions match</div></td></tr>`;return;}
+  if(!d.length){tb.innerHTML=`<tr><td colspan="19"><div class="empty">No positions match</div></td></tr>`;return;}
   tb.innerHTML=d.map(t=>{
     const badge=t.status==='1/2 Open'?`<span class="badge b-half">½ open</span>`:`<span class="badge b-open">open</span>`;
     const stHtml=t.stages.length?t.stages.map(s=>`<span class="stage s${s[0]}">${s}</span>`).join(''):'<span class="dim" style="font-size:11px">—</span>';
@@ -496,6 +523,8 @@ function render(){
       <td class="nc" title="${t.name}">${t.name}</td>
       <td class="dc">${t.entry_date}</td>
       <td class="ctc">${t.contract}</td>
+      <td class="mono dim">$${t.strike}</td>
+      <td class="mono dim">${t.contracts}</td>
       <td class="mono">$${t.entry}</td>
       <td class="curr-cell">${currDisplay}</td>
       <td class="mono">${currPctDisplay}</td>
@@ -503,8 +532,9 @@ function render(){
       <td class="mono dim">${pS(t.max_pct)}</td>
       <td><div class="stages">${stHtml}</div></td>
       <td class="rpnl">${t.realized>0?'+$'+t.realized.toLocaleString():'—'}</td>
-      <td class="upnl">$${t.unrealized.toLocaleString()}</td>
+      <td class="upnl">${t.unrealized>0?'$'+t.unrealized.toLocaleString():'—'}</td>
       <td class="pnl ${pC(t.total_pnl)}">${dol(t.total_pnl)}</td>
+      <td class="mono ${pC(t.pnl_pct)}">${t.pnl_pct>0?'+':''}${t.pnl_pct}%</td>
       <td class="mono dim">${remStr}</td>
       <td><div class="theme-cell"><span class="tdot" style="background:${tColor(t)}"></span>${t.theme||t.sector||'—'}</div></td>
       <td>${badge}</td>
