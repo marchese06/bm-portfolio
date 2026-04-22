@@ -380,7 +380,7 @@ async function loadData(){
         strike,
         contract: contractStr,
         entry,
-        current: entry, // will be updated by Yahoo Finance fetch
+        current: max||entry, // default to max until Yahoo live price loads
         max: max||entry,
         curr_pct: 0,    // will be updated
         max_pct: maxPctRaw,
