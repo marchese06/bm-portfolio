@@ -298,40 +298,38 @@ async function fetchAllPrices(trades){
 
 // ── P&L calculation ──────────────────────────────────────────────────────────
 function calcPnl(t){
-  // ~$1,000 deployed per position. Track proceeds and cost per tranche.
+  // Realized = cash proceeds from completed sells.
+  // Unrealized = current value of remaining open portion.
+  // Net P&L = Realized + Unrealized - $1,000 cost (full picture of every position).
   const cost=1000, mult=t.max/t.entry;
-  let proceeds=0, costSold=0, remUnits=1.0;
+  let realized=0, remUnits=1.0;
   const stages=[];
 
   if(mult>=2){
-    // Sell 50% at 2x: proceeds = 0.5 * 2 * cost = $1,000 | cost of tranche = $500
-    proceeds += 0.5 * 2 * cost; costSold += 0.5 * cost; remUnits=0.5; stages.push('2x');
+    realized += 0.5 * 2 * cost;             // sell 50% at 2x = $1,000
+    remUnits=0.5; stages.push('2x');
     if(mult>=3){
-      // Sell 75% of remaining (37.5% of original) at 3x: proceeds = 0.375*3*cost | cost = 0.375*cost
-      proceeds += remUnits*0.75 * 3 * cost; costSold += remUnits*0.75 * cost; remUnits*=0.25; stages.push('3x');
+      realized += remUnits*0.75 * 3 * cost; // sell 75% of rem at 3x = $1,125
+      remUnits*=0.25; stages.push('3x');
       if(mult>=4){
-        // Sell all remaining at 4x
-        proceeds += remUnits * 4 * cost; costSold += remUnits * cost; remUnits=0; stages.push('4x');
+        realized += remUnits * 4 * cost;    // sell rest at 4x = $500
+        remUnits=0; stages.push('4x');
       }
     }
   }
 
-  const realizedProfit = Math.round(proceeds - costSold);      // cash profit locked in
   const unrealized = Math.round(remUnits * (t.current/t.entry) * cost);
-  const remainingCost = Math.round(remUnits * cost);           // cost still at risk
-  const total_pnl = Math.round(realizedProfit + unrealized - remainingCost); // net vs full $1k deployed
-  const pnl_pct = Math.round((total_pnl / cost) * 100);       // % of $1k invested
+  const total_pnl  = Math.round(realized + unrealized - cost); // realized + current open value - cost
+  const pnl_pct    = Math.round((total_pnl / cost) * 100);
 
-  // contracts: whole number of contracts at $100/contract (each = 100 shares × entry price)
-  // Round down to stay within $1,000, but round up if overshoot is ≤ $100
-  const contractCost = t.entry * 100; // cost of 1 contract
+  // Contracts: whole number, round up if overshoot ≤ $100
+  const contractCost = t.entry * 100;
   const floored = Math.floor(cost / contractCost);
   const ceiled  = floored + 1;
   const contracts = (ceiled * contractCost - cost) <= 100 ? ceiled : floored;
 
-  return{realized:realizedProfit, unrealized, total_pnl, pnl_pct, rem_pct:Math.round(remUnits*100), stages, contracts};
+  return{realized:Math.round(realized), unrealized, total_pnl, pnl_pct, rem_pct:Math.round(remUnits*100), stages, contracts};
 }
-
 const pC=v=>v>0?'pos':v<0?'neg':'dim';
 const pS=v=>(v>0?'+':'')+v+'%';
 const dol=v=>(v>=0?'+$':'-$')+Math.abs(v).toLocaleString();
@@ -428,15 +426,16 @@ function buildMetrics(){
   const n=ALL.length;
   const totR=ALL.reduce((s,t)=>s+t.realized,0);
   const totU=ALL.reduce((s,t)=>s+t.unrealized,0);
+  // Net P&L = sum of every row's Net P&L column across all active positions
   const totP=ALL.reduce((s,t)=>s+t.total_pnl,0);
   const dbl=ALL.filter(t=>t.stages.includes('2x')).length;
   const h3=ALL.filter(t=>t.stages.includes('3x')).length;
   const h4=ALL.filter(t=>t.stages.includes('4x')).length;
   const best=ALL.reduce((a,b)=>a.total_pnl>b.total_pnl?a:b,{total_pnl:-Infinity,ticker:'—'});
   document.getElementById('metrics').innerHTML=[
-    {l:'Net P&L',v:dol(totP),c:totP>=0?'g':'r',s:`on ~$${n}k deployed`},
-    {l:'Realized',v:'+$'+totR.toLocaleString(),c:'g',s:'locked profits off table'},
-    {l:'Unrealized',v:'$'+totU.toLocaleString(),c:'b',s:'at current option price'},
+    {l:'Booked P&L',v:dol(totP),c:totP>=0?'g':'r',s:`realized only · excl. open`},
+    {l:'Realized',v:'+$'+totR.toLocaleString(),c:'g',s:'cash received from sells'},
+    {l:'Unrealized',v:'$'+totU.toLocaleString(),c:'b',s:'current value of open portion'},
     {l:'Hit 2x+',v:dbl,c:'g',s:`${h3} hit 3x · ${h4} hit 4x`},
     {l:'Best trade',v:best.ticker,c:'o',s:dol(best.total_pnl)+' net P&L'},
     {l:'Positions',v:n,c:'',s:'active · live prices'},
