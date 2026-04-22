@@ -11,7 +11,7 @@
   *{box-sizing:border-box;margin:0;padding:0;}
   body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14px;min-height:100vh;overflow-x:hidden;}
   body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,229,160,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,160,0.02) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0;}
-  .wrap{max-width:1500px;margin:0 auto;padding:0 24px 60px;position:relative;z-index:1;}
+  .wrap{max-width:1600px;margin:0 auto;padding:0 24px 60px;position:relative;z-index:1;}
   header{padding:28px 0 22px;border-bottom:1px solid var(--border);margin-bottom:22px;display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;}
   .logo h1{font-family:var(--mono);font-size:11px;font-weight:400;color:var(--green);letter-spacing:0.2em;text-transform:uppercase;margin-bottom:5px;}
   .logo h2{font-size:26px;font-weight:600;letter-spacing:-0.02em;}
@@ -32,13 +32,11 @@
   .cc{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:15px 17px;}
   .cc-title{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:13px;}
   .br{display:flex;align-items:center;gap:8px;margin-bottom:7px;}
-  .br-label{width:120px;flex-shrink:0;font-size:12px;color:var(--text2);text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;}
-  .br-label:hover{color:var(--text);}
+  .br-label{width:120px;flex-shrink:0;font-size:12px;color:var(--text2);text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   .br-track{flex:1;background:var(--surface2);border-radius:3px;height:10px;overflow:hidden;}
   .br-fill{height:10px;border-radius:3px;}
   .br-cnt{width:20px;font-family:var(--mono);font-size:11px;color:var(--text);text-align:right;flex-shrink:0;}
-  .perf-row{display:flex;align-items:center;gap:8px;padding:4px 6px;border-radius:5px;cursor:pointer;transition:background 0.1s;}
-  .perf-row:hover{background:var(--surface2);}
+  .perf-row{display:flex;align-items:center;gap:8px;padding:4px 6px;border-radius:5px;}
   .perf-tick{font-family:var(--mono);font-size:11px;font-weight:700;width:40px;flex-shrink:0;}
   .perf-wrap{flex:1;position:relative;height:15px;}
   .perf-zero{position:absolute;left:50%;top:0;bottom:0;width:1px;background:rgba(255,255,255,0.1);}
@@ -58,16 +56,20 @@
   .legend-item{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--text3);}
   .legend-dot{width:8px;height:8px;border-radius:2px;}
   .last-updated{font-family:var(--mono);font-size:10px;color:var(--text3);margin-left:auto;}
+  .price-status{font-family:var(--mono);font-size:10px;padding:2px 8px;border-radius:10px;margin-left:8px;}
+  .price-status.loading{background:rgba(91,140,255,0.12);color:var(--blue);}
+  .price-status.done{background:rgba(0,229,160,0.12);color:var(--green);}
+  .price-status.error{background:rgba(255,77,109,0.12);color:var(--red);}
   .tbl-wrap{overflow-x:auto;background:var(--surface);border:1px solid var(--border);border-radius:12px;}
   table{width:100%;border-collapse:collapse;font-size:12.5px;}
   thead tr{border-bottom:1px solid var(--border);}
   th{font-family:var(--mono);font-size:10px;font-weight:400;color:var(--text3);letter-spacing:0.1em;text-transform:uppercase;padding:10px 12px;text-align:left;white-space:nowrap;cursor:pointer;user-select:none;transition:color 0.15s;}
   th:hover{color:var(--text);}
-  th.asc::after{content:' \2191';color:var(--green);}th.desc::after{content:' \2193';color:var(--green);}
+  th.asc::after{content:' ↑';color:var(--green);}th.desc::after{content:' ↓';color:var(--green);}
   td{padding:9px 12px;border-bottom:1px solid rgba(255,255,255,0.04);vertical-align:middle;color:var(--text);}
   tr:last-child td{border-bottom:none;}tr:hover td{background:rgba(255,255,255,0.025);}
   .tc{font-family:var(--mono);font-size:13px;font-weight:700;}
-  .nc{font-size:12px;color:var(--text2);max-width:130px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .nc{font-size:12px;color:var(--text2);max-width:150px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   .dc{font-family:var(--mono);font-size:11px;color:var(--text3);}
   .ctc{font-size:12px;color:var(--text3);white-space:nowrap;}
   .mono{font-family:var(--mono);font-size:12px;}
@@ -75,6 +77,9 @@
   .pnl{font-family:var(--mono);font-size:12px;font-weight:700;}
   .rpnl{font-family:var(--mono);font-size:11px;color:var(--green);}
   .upnl{font-family:var(--mono);font-size:11px;color:var(--text2);}
+  .curr-cell{font-family:var(--mono);font-size:12px;}
+  .curr-loading{color:var(--blue);font-size:11px;animation:blink 1s infinite;}
+  @keyframes blink{0%,100%{opacity:1}50%{opacity:0.4}}
   .badge{display:inline-block;padding:2px 7px;border-radius:4px;font-size:11px;font-family:var(--mono);font-weight:700;}
   .b-open{background:rgba(0,229,160,0.1);color:var(--green);border:1px solid rgba(0,229,160,0.2);}
   .b-half{background:rgba(91,140,255,0.1);color:var(--blue);border:1px solid rgba(91,140,255,0.25);}
@@ -96,7 +101,10 @@
   <div class="logo"><h1>Breakout Multiplier</h1><h2>Active Portfolio Dashboard</h2></div>
   <div class="hdr-right">
     <div class="hdr-date" id="hdr-date">Loading...</div>
-    <div class="live"><span class="live-dot"></span>LIVE</div>
+    <div style="display:flex;align-items:center;gap:8px;justify-content:flex-end;margin-top:4px;">
+      <div class="live"><span class="live-dot"></span>LIVE</div>
+      <span class="price-status loading" id="price-status">fetching prices…</span>
+    </div>
   </div>
 </header>
 <div id="error-area"></div>
@@ -104,68 +112,48 @@
 <div class="charts" id="charts"></div>
 <div class="legend">
   <span class="legend-item"><span class="legend-dot" style="background:rgba(0,229,160,0.6)"></span>Sold 50% at 2x</span>
-  <span class="legend-item"><span class="legend-dot" style="background:rgba(91,140,255,0.6)"></span>Sold 75% of rem. at 3x</span>
+  <span class="legend-item"><span class="legend-dot" style="background:rgba(91,140,255,0.6)"></span>Sold 75% rem. at 3x</span>
   <span class="legend-item"><span class="legend-dot" style="background:rgba(245,200,66,0.6)"></span>Sold rest at 4x</span>
-  <span class="legend-item" style="font-size:11px;">P&L assumes ~$1,000/position</span>
+  <span class="legend-item" style="font-size:11px;">~$1,000/position · live option prices via Yahoo Finance</span>
   <span class="last-updated" id="last-updated"></span>
 </div>
 <div class="controls">
   <span class="ctrl-label">Filter:</span>
   <div id="filters" style="display:flex;gap:6px;flex-wrap:wrap;"></div>
-  <button class="refresh-btn" onclick="loadData()">↻ Refresh</button>
+  <button class="refresh-btn" onclick="loadAll()">↻ Refresh</button>
   <input class="srch" id="srch" placeholder="Search ticker…">
   <span class="cnt" id="cnt"></span>
 </div>
 <div class="tbl-wrap">
 <table>
 <thead><tr>
-  <th data-col="ticker">Ticker</th><th data-col="name">Name</th>
-  <th data-col="entry_date">Entry</th><th data-col="contract">Contract</th>
-  <th data-col="entry">Entry $</th><th data-col="current">Now $</th>
-  <th data-col="curr_pct">Return %</th><th data-col="max_pct">Max %</th>
+  <th data-col="ticker">Ticker</th>
+  <th data-col="name">Name</th>
+  <th data-col="entry_date">Entry</th>
+  <th data-col="contract">Contract</th>
+  <th data-col="entry">Entry $</th>
+  <th data-col="current">Current $</th>
+  <th data-col="curr_pct">Return %</th>
+  <th data-col="max">Max $</th>
+  <th data-col="max_pct">Max %</th>
   <th data-col="sell_stages">Sells</th>
-  <th data-col="realized">Realized</th><th data-col="unrealized">Unrealized</th>
-  <th data-col="total_pnl">Net P&L</th><th data-col="rem_pct">% Rem.</th>
-  <th data-col="theme">Theme</th><th data-col="status">Status</th>
+  <th data-col="realized">Realized</th>
+  <th data-col="unrealized">Unrealized</th>
+  <th data-col="total_pnl">Net P&L</th>
+  <th data-col="rem_pct">% Rem.</th>
+  <th data-col="theme">Theme</th>
+  <th data-col="status">Status</th>
 </tr></thead>
-<tbody id="tbody"><tr><td colspan="15"><div class="loading">Fetching live data...</div></td></tr></tbody>
+<tbody id="tbody"><tr><td colspan="16"><div class="loading">Fetching live data...</div></td></tr></tbody>
 </table>
 </div>
 <footer>
-  <p>BREAKOUT MULTIPLIER · LIVE FROM GOOGLE SHEETS · ~$1,000/POSITION · STAGED EXIT MODEL</p>
+  <p>BREAKOUT MULTIPLIER · LIVE OPTION PRICES VIA YAHOO FINANCE · ~$1,000/POSITION · STAGED EXIT MODEL</p>
   <p id="footer-date"></p>
 </footer>
 </div>
 
 <script>
-// ── EXACT COLUMN MAP (confirmed from raw CSV decode) ─────────────────────────
-// col[0]  = "O" or "X" (O = open trade, X = closed)
-// col[1]  = empty
-// col[2]  = SPEAKER NOTES (e.g. "CONTRACT VALUE: $0.17 || MAX: $6.85 ...")
-// col[3]  = Ticker
-// col[4]  = Name
-// col[5]  = Sector
-// col[6]  = Industry
-// col[7]  = Theme
-// col[8]  = C/S Price
-// col[9]  = Entry Date
-// col[10] = Email Time
-// col[11] = Expiration
-// col[12] = Contract
-// col[13] = Option Strike
-// col[14] = C/P (Call/Put)
-// col[15] = Entry $
-// col[16] = Current $
-// col[17] = Max $
-// col[18] = Current %
-// col[19] = Max %
-// col[20] = Drawdown from Max
-// col[21] = Doubled
-// col[22] = Days to 2X
-// col[23] = Date Doubled
-// col[24] = (extra col)
-// col[25] = Trade Status  ← "Open" or "1/2 Open"
-
 const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRnBssDB2zK9HpOp9kb0zYGWAjlhR-GWxSKpqag06rzDm9myu_rN_-wXmGhcFxVchwqXr-jatRToc2b/pub?gid=975618056&single=true&output=csv';
 
 const TC = {
@@ -174,12 +162,13 @@ const TC = {
   'Biotech':'#f060b5','Space':'#00c9d4','Healthcare':'#68c44a',
   'Energy':'#f5c842','Coal':'#8a8fa8','Drones':'#00b89f',
   'Software - Infrastructure':'#5b8cff','Software - Application':'#4a7be0',
+  'Batteries':'#e8a030','Defensive':'#68c44a',
 };
 
 let ALL=[], sCol='total_pnl', sDir='desc', filt='All', q='';
 
-// Parse one CSV line respecting quoted fields
-function parseLine(line) {
+// ── CSV helpers ──────────────────────────────────────────────────────────────
+function parseLine(line){
   const res=[]; let cur='', inQ=false;
   for(let i=0;i<line.length;i++){
     const c=line[i];
@@ -190,20 +179,122 @@ function parseLine(line) {
   res.push(cur);
   return res;
 }
+function num(s){const n=parseFloat(String(s||'').replace(/[^0-9.\-]/g,''));return isNaN(n)?null:n;}
+function pct(s){const n=parseFloat(String(s||'').replace(/[^0-9.\-]/g,''));return isNaN(n)?null:n;}
 
-function num(s){
-  if(!s)return null;
-  const n=parseFloat(String(s).replace(/[^0-9.\-]/g,''));
-  return isNaN(n)?null:n;
-}
-function pct(s){
-  if(!s)return null;
-  const n=parseFloat(String(s).replace(/[^0-9.\-]/g,''));
-  return isNaN(n)?null:n;
+// ── Option symbol builder ────────────────────────────────────────────────────
+// Contract string examples: "May 15th Call", "Jul 17th Call", "Jun 18th Put"
+// We derive expiration year from entry date (same year, or next if month already passed)
+const MONTHS = {jan:1,feb:2,mar:3,apr:4,may:5,jun:6,jul:7,aug:8,sep:9,oct:10,nov:11,dec:12};
+
+function buildOptionSymbol(ticker, contractStr, entryDateStr, strikeNum){
+  try{
+    // Parse contract: "May 15th Call" → month=5, day=15, type=C
+    const parts = contractStr.toLowerCase().replace(/[^a-z0-9 ]/g,'').trim().split(/\s+/);
+    // parts: ["may","15th","call"] or ["aug","21st","call"]
+    const monthName = parts[0].slice(0,3);
+    const month = MONTHS[monthName];
+    const day = parseInt(parts[1]);
+    const cpType = parts[parts.length-1].startsWith('p') ? 'P' : 'C';
+    if(!month||!day||isNaN(day)) return null;
+
+    // Determine year: use entry date year; if that month/day is in the past, use next year
+    const entryYear = entryDateStr ? parseInt(entryDateStr.split('/')[2]) : new Date().getFullYear();
+    const now = new Date();
+    let year = entryYear;
+    const expDate = new Date(year, month-1, day);
+    if(expDate < now) year++;  // already expired, try next year
+    
+    const yy = String(year).slice(2).padStart(2,'0');
+    const mm = String(month).padStart(2,'0');
+    const dd = String(day).padStart(2,'0');
+    
+    // Strike: 8 digits, price * 1000, padded
+    const strikePadded = String(Math.round(strikeNum * 1000)).padStart(8,'0');
+    
+    return `${ticker}${yy}${mm}${dd}${cpType}${strikePadded}`;
+  } catch(e){ return null; }
 }
 
+// ── Yahoo Finance price fetcher ──────────────────────────────────────────────
+const priceCache = {};
+
+async function fetchOptionPrice(symbol){
+  if(!symbol) return null;
+  if(priceCache[symbol] !== undefined) return priceCache[symbol];
+  try{
+    // Use Yahoo Finance v8 chart endpoint via CORS proxy
+    const url = `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?interval=1d&range=1d`;
+    const res = await fetch(url, {headers:{'Accept':'application/json'}});
+    if(!res.ok){ priceCache[symbol]=null; return null; }
+    const data = await res.json();
+    const meta = data?.chart?.result?.[0]?.meta;
+    const price = meta?.regularMarketPrice ?? meta?.previousClose ?? null;
+    priceCache[symbol] = price;
+    return price;
+  } catch(e){
+    priceCache[symbol] = null;
+    return null;
+  }
+}
+
+async function fetchAllPrices(trades){
+  const ps = document.getElementById('price-status');
+  ps.textContent = `fetching ${trades.length} prices…`;
+  ps.className = 'price-status loading';
+  
+  let loaded=0, failed=0;
+  // Batch fetches — 5 at a time
+  const batchSize = 5;
+  for(let i=0; i<trades.length; i+=batchSize){
+    const batch = trades.slice(i, i+batchSize);
+    await Promise.all(batch.map(async t => {
+      const price = await fetchOptionPrice(t.optionSymbol);
+      if(price !== null){
+        t.current = price;
+        t.curr_pct = Math.round(((price - t.entry) / t.entry) * 100);
+        loaded++;
+      } else {
+        failed++;
+      }
+      // Recalc P&L with new current price
+      Object.assign(t, calcPnl(t));
+    }));
+    // Re-render after each batch
+    render();
+    ps.textContent = `pricing ${i+batchSize}/${trades.length}…`;
+    await new Promise(r => setTimeout(r, 150)); // small delay between batches
+  }
+  
+  if(failed===0){
+    ps.textContent = `${loaded} live prices ✓`;
+    ps.className = 'price-status done';
+  } else {
+    ps.textContent = `${loaded} live · ${failed} unavailable`;
+    ps.className = 'price-status error';
+  }
+}
+
+// ── P&L calculation ──────────────────────────────────────────────────────────
+function calcPnl(t){
+  const start=1000, mult=t.max/t.entry;
+  let realized=0, remUnits=1.0;
+  const stages=[];
+  if(mult>=2){realized+=1000;remUnits=0.5;stages.push('2x');
+    if(mult>=3){realized+=remUnits*3*start*0.75;remUnits*=0.25;stages.push('3x');
+      if(mult>=4){realized+=remUnits*4*start;remUnits=0;stages.push('4x');}}}
+  const unrealized = remUnits * (t.current/t.entry) * start;
+  return{realized:Math.round(realized),unrealized:Math.round(unrealized),total_pnl:Math.round(realized+unrealized-start),rem_pct:Math.round(remUnits*100),stages};
+}
+
+const pC=v=>v>0?'pos':v<0?'neg':'dim';
+const pS=v=>(v>0?'+':'')+v+'%';
+const dol=v=>(v>=0?'+$':'-$')+Math.abs(v).toLocaleString();
+const tColor=t=>TC[t.theme]||TC[t.sector]||'#888';
+
+// ── Load CSV ─────────────────────────────────────────────────────────────────
 async function loadData(){
-  document.getElementById('tbody').innerHTML='<tr><td colspan="15"><div class="loading">Fetching live data...</div></td></tr>';
+  document.getElementById('tbody').innerHTML='<tr><td colspan="16"><div class="loading">Fetching data from Google Sheets...</div></td></tr>';
   document.getElementById('error-area').innerHTML='';
   try{
     const res=await fetch(CSV_URL+'&t='+Date.now());
@@ -213,111 +304,124 @@ async function loadData(){
     const trades=[];
 
     for(let i=0;i<lines.length;i++){
-      const raw=lines[i];
-      // ── THE FILTER: only rows where column 0 is exactly "O" ──
-      if(!raw.startsWith('O,')) continue;
+      const c=parseLine(lines[i]);
+      if(c.length<10) continue;
 
-      const c=parseLine(raw);
-      // Safety: need at least 26 cols
-      if(c.length<20) continue;
+      // col[0]=Entry Date, col[1]=Ticker, col[2]=Name, col[3]=Sector
+      // col[4]=Industry, col[5]=Theme, col[6]=Strike, col[7]=Contract
+      // col[8]=Entry$, col[9]=Max$, col[10]=Max%, col[11]=Doubled
+      // col[12]=Days to 2x, col[13]=Date 2x, col[14]=Status
+      const ticker=(c[1]||'').trim();
+      if(!ticker||!/^[A-Z]{1,6}$/.test(ticker)) continue;
+      if(['TICKER','STOCK','SECTOR','ENTRY','NAME'].includes(ticker)) continue;
 
-      const ticker=(c[3]||'').trim();
-      if(!ticker||ticker.length>6) continue;
-
-      const entry=num(c[15]);
-      const current=num(c[16]);
-      const max=num(c[17]);
+      const entry=num(c[8]);
+      const max=num(c[9]);
       if(!entry||entry<=0) continue;
 
-      const status=(c[25]||c[c.length-1]||'').trim();
+      const maxPctRaw=pct(c[10])||0;
+      const strike=num(c[6])||0;
+      const contractStr=(c[7]||'').trim();
+      const entryDateStr=(c[0]||'').trim();
+      const status=(c[14]||'').trim();
 
-      trades.push({
+      const optionSymbol = buildOptionSymbol(ticker, contractStr, entryDateStr, strike);
+
+      const t = {
         ticker,
-        name:(c[4]||ticker).trim(),
-        sector:(c[5]||'').trim(),
-        industry:(c[6]||'').trim(),
-        theme:(c[7]||'').trim(),
-        entry_date:(c[9]||'').trim(),
-        strike:num(c[13])||0,
-        contract:(c[12]||'').trim(),
+        name:(c[2]||ticker).trim(),
+        sector:(c[3]||'').trim(),
+        industry:(c[4]||'').trim(),
+        theme:(c[5]||'').trim(),
+        entry_date: entryDateStr,
+        strike,
+        contract: contractStr,
         entry,
-        current:current||entry,
-        max:max||current||entry,
-        curr_pct:pct(c[18])||0,
-        max_pct:pct(c[19])||0,
-        doubled:(c[21]||'').trim(),
-        status:status.includes('1/2')?'1/2 Open':'Open',
-      });
+        current: entry, // will be updated by Yahoo Finance fetch
+        max: max||entry,
+        curr_pct: 0,    // will be updated
+        max_pct: maxPctRaw,
+        doubled:(c[11]||'').trim(),
+        status: status.includes('1/2')?'1/2 Open':'Open',
+        optionSymbol,
+        priceLoaded: false,
+      };
+      Object.assign(t, calcPnl(t));
+      trades.push(t);
     }
 
-    if(trades.length===0) throw new Error('No open trades found (no rows starting with "O,"). Check the sheet is published correctly.');
+    if(trades.length===0) throw new Error('No valid trades found. Check the sheet is published and has data in the expected columns (Entry Date in A, Ticker in B).');
 
-    ALL=trades.map(t=>({...t,...calcPnl(t)}));
+    ALL=trades;
 
     const now=new Date();
     const ds=now.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}).toUpperCase();
     const ts=now.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
     document.getElementById('hdr-date').textContent=ds;
-    document.getElementById('last-updated').textContent='Updated '+ts;
+    document.getElementById('last-updated').textContent='Sheet loaded '+ts;
     document.getElementById('footer-date').textContent='LAST FETCHED '+ds+' · '+ts;
+
     buildMetrics();buildCharts();buildFilters();render();
+    
+    // Now fetch live prices
+    await fetchAllPrices(ALL);
+    buildMetrics();buildCharts();render();
 
   }catch(err){
     document.getElementById('error-area').innerHTML=`<div class="error-box">⚠ ${err.message}</div>`;
     document.getElementById('metrics').innerHTML='';
-    document.getElementById('tbody').innerHTML='<tr><td colspan="15"><div class="empty">Could not load data.</div></td></tr>';
+    document.getElementById('tbody').innerHTML='<tr><td colspan="16"><div class="empty">Could not load data.</div></td></tr>';
+    document.getElementById('price-status').textContent='error';
+    document.getElementById('price-status').className='price-status error';
   }
 }
 
-function calcPnl(t){
-  const start=1000, mult=t.max/t.entry;
-  let realized=0,remUnits=1.0;
-  const stages=[];
-  if(mult>=2){realized+=1000;remUnits=0.5;stages.push('2x');
-    if(mult>=3){realized+=remUnits*3*start*0.75;remUnits*=0.25;stages.push('3x');
-      if(mult>=4){realized+=remUnits*4*start;remUnits=0;stages.push('4x');}}}
-  const unrealized=remUnits*(t.current/t.entry)*start;
-  return{realized:Math.round(realized),unrealized:Math.round(unrealized),total_pnl:Math.round(realized+unrealized-start),rem_pct:Math.round(remUnits*100),stages};
-}
+async function loadAll(){ ALL=[]; await loadData(); }
 
-const pC=v=>v>0?'pos':v<0?'neg':'dim';
-const pS=v=>(v>0?'+':'')+v+'%';
-const dol=v=>(v>=0?'+$':'-$')+Math.abs(v).toLocaleString();
-const tColor=t=>TC[t.theme]||TC[t.sector]||'#888';
-
+// ── Metrics ──────────────────────────────────────────────────────────────────
 function buildMetrics(){
-  const n=ALL.length,totR=ALL.reduce((s,t)=>s+t.realized,0),totU=ALL.reduce((s,t)=>s+t.unrealized,0),totP=ALL.reduce((s,t)=>s+t.total_pnl,0);
-  const dbl=ALL.filter(t=>t.stages.includes('2x')).length,h3=ALL.filter(t=>t.stages.includes('3x')).length,h4=ALL.filter(t=>t.stages.includes('4x')).length;
-  const best=ALL.reduce((a,b)=>a.total_pnl>b.total_pnl?a:b);
+  const n=ALL.length;
+  const totR=ALL.reduce((s,t)=>s+t.realized,0);
+  const totU=ALL.reduce((s,t)=>s+t.unrealized,0);
+  const totP=ALL.reduce((s,t)=>s+t.total_pnl,0);
+  const dbl=ALL.filter(t=>t.stages.includes('2x')).length;
+  const h3=ALL.filter(t=>t.stages.includes('3x')).length;
+  const h4=ALL.filter(t=>t.stages.includes('4x')).length;
+  const best=ALL.reduce((a,b)=>a.total_pnl>b.total_pnl?a:b,{total_pnl:-Infinity,ticker:'—'});
   document.getElementById('metrics').innerHTML=[
-    {l:'Net P&L',v:dol(totP),c:totP>=0?'g':'r',s:`on $${n}k deployed (${(totP/n/10).toFixed(1)}%)`},
+    {l:'Net P&L',v:dol(totP),c:totP>=0?'g':'r',s:`on ~$${n}k deployed`},
     {l:'Realized',v:'+$'+totR.toLocaleString(),c:'g',s:'locked profits off table'},
-    {l:'Unrealized',v:'$'+totU.toLocaleString(),c:'b',s:'current open value'},
+    {l:'Unrealized',v:'$'+totU.toLocaleString(),c:'b',s:'at current option price'},
     {l:'Hit 2x+',v:dbl,c:'g',s:`${h3} hit 3x · ${h4} hit 4x`},
     {l:'Best trade',v:best.ticker,c:'o',s:dol(best.total_pnl)+' net P&L'},
-    {l:'Positions',v:n,c:'',s:'active · live from sheet'},
+    {l:'Positions',v:n,c:'',s:'active · live prices'},
   ].map(m=>`<div class="mc ${m.c==='o'?'hi':''}"><div class="mc-label">${m.l}</div><div class="mc-val ${m.c}">${m.v}</div><div class="mc-sub">${m.s}</div></div>`).join('');
 }
 
+// ── Charts ───────────────────────────────────────────────────────────────────
 function buildCharts(){
   const tm={},sm={};
-  ALL.forEach(t=>{const th=t.theme||t.sector||'Other';tm[th]=(tm[th]||0)+1;sm[t.sector||'Other']=(sm[t.sector||'Other']||0)+1;});
+  ALL.forEach(t=>{
+    const th=t.theme||t.sector||'Other';
+    tm[th]=(tm[th]||0)+1;
+    sm[t.sector||'Other']=(sm[t.sector||'Other']||0)+1;
+  });
   const themes=Object.entries(tm).sort((a,b)=>b[1]-a[1]).slice(0,10);
   const sectors=Object.entries(sm).sort((a,b)=>b[1]-a[1]);
-  const tMax=themes[0]?.[1]||1,sMax=sectors[0]?.[1]||1;
+  const tMax=themes[0]?.[1]||1, sMax=sectors[0]?.[1]||1;
   const sorted=[...ALL].sort((a,b)=>b.total_pnl-a.total_pnl);
   const perf=[...sorted.slice(0,5),...sorted.slice(-3)];
   const pMax=Math.max(...perf.map(t=>Math.abs(t.total_pnl)))||1;
   document.getElementById('charts').innerHTML=`
     <div class="cc"><div class="cc-title">By theme</div>
-      ${themes.map(([th,c])=>`<div class="br"><div class="br-label" onclick="setF('${th}')">${th}</div><div class="br-track"><div class="br-fill" style="width:${Math.round(c/tMax*100)}%;background:${TC[th]||'#888'}"></div></div><div class="br-cnt">${c}</div></div>`).join('')}
+      ${themes.map(([th,c])=>`<div class="br"><div class="br-label">${th}</div><div class="br-track"><div class="br-fill" style="width:${Math.round(c/tMax*100)}%;background:${TC[th]||'#888'}"></div></div><div class="br-cnt">${c}</div></div>`).join('')}
     </div>
     <div class="cc"><div class="cc-title">By sector</div>
       ${sectors.map(([s,c])=>`<div class="br"><div class="br-label">${s}</div><div class="br-track"><div class="br-fill" style="width:${Math.round(c/sMax*100)}%;background:#5b8cff"></div></div><div class="br-cnt">${c}</div></div>`).join('')}
     </div>
     <div class="cc"><div class="cc-title">Net P&L per position (~$1k)</div>
       ${perf.map(t=>{const p=t.total_pnl,f=Math.abs(p)/pMax,col=p>0?'#00e5a0':'#ff4d6d',left=p>=0?50:50-f*47,w=f*47;
-        return `<div class="perf-row" onclick="setF('${t.theme||t.sector}')">
+        return `<div class="perf-row">
           <div class="perf-tick" style="color:${tColor(t)}">${t.ticker}</div>
           <div class="perf-wrap"><div class="perf-zero"></div><div class="perf-bar" style="left:${left}%;width:${w}%;background:${col}"></div></div>
           <div class="perf-pct ${p>0?'pos':'neg'}">${p>=0?'+$':'-$'}${Math.abs(p).toLocaleString()}</div>
@@ -325,6 +429,7 @@ function buildCharts(){
     </div>`;
 }
 
+// ── Filters ──────────────────────────────────────────────────────────────────
 function buildFilters(){
   const themes=[...new Set(ALL.map(t=>t.theme||t.sector).filter(Boolean))];
   const fs=['All','Winners','Losers','Hit 2x','Hit 3x+','Hit 4x','1/2 Open','Full Open',...themes];
@@ -332,6 +437,7 @@ function buildFilters(){
 }
 function setF(f){filt=f;buildFilters();render();}
 
+// ── Render table ─────────────────────────────────────────────────────────────
 function getData(){
   let d=[...ALL];
   if(filt==='Winners')d=d.filter(t=>t.total_pnl>0);
@@ -351,16 +457,31 @@ function render(){
   const d=getData();
   document.getElementById('cnt').textContent=d.length+' of '+ALL.length+' positions';
   const tb=document.getElementById('tbody');
-  if(!d.length){tb.innerHTML=`<tr><td colspan="15"><div class="empty">No positions match</div></td></tr>`;return;}
+  if(!d.length){tb.innerHTML=`<tr><td colspan="16"><div class="empty">No positions match</div></td></tr>`;return;}
   tb.innerHTML=d.map(t=>{
     const badge=t.status==='1/2 Open'?`<span class="badge b-half">½ open</span>`:`<span class="badge b-open">open</span>`;
-    const stHtml=t.stages.length?t.stages.map(s=>`<span class="stage s${s[0]}">${s}</span>`).join(''):'<span style="color:var(--text3);font-size:11px">—</span>';
-    const remStr=t.rem_pct>0?`${t.rem_pct}%`:`<span style="color:var(--text3)">closed</span>`;
+    const stHtml=t.stages.length?t.stages.map(s=>`<span class="stage s${s[0]}">${s}</span>`).join(''):'<span class="dim" style="font-size:11px">—</span>';
+    const remStr=t.rem_pct>0?`${t.rem_pct}%`:`<span class="dim">closed</span>`;
+    
+    // Current price display
+    const currLoaded = priceCache[t.optionSymbol] !== undefined;
+    const currDisplay = currLoaded
+      ? (priceCache[t.optionSymbol] !== null ? `$${t.current.toFixed(2)}` : '<span class="dim">n/a</span>')
+      : '<span class="curr-loading">…</span>';
+    
+    const currPctDisplay = currLoaded && priceCache[t.optionSymbol] !== null
+      ? `<span class="${pC(t.curr_pct)}">${pS(t.curr_pct)}</span>`
+      : '<span class="dim">—</span>';
+
     return `<tr>
-      <td class="tc">${t.ticker}</td><td class="nc" title="${t.name}">${t.name}</td>
-      <td class="dc">${t.entry_date}</td><td class="ctc">${t.contract}</td>
-      <td class="mono">$${t.entry}</td><td class="mono">$${t.current}</td>
-      <td class="mono ${pC(t.curr_pct)}">${pS(t.curr_pct)}</td>
+      <td class="tc">${t.ticker}</td>
+      <td class="nc" title="${t.name}">${t.name}</td>
+      <td class="dc">${t.entry_date}</td>
+      <td class="ctc">${t.contract}</td>
+      <td class="mono">$${t.entry}</td>
+      <td class="curr-cell">${currDisplay}</td>
+      <td class="mono">${currPctDisplay}</td>
+      <td class="mono dim">$${t.max}</td>
       <td class="mono dim">${pS(t.max_pct)}</td>
       <td><div class="stages">${stHtml}</div></td>
       <td class="rpnl">${t.realized>0?'+$'+t.realized.toLocaleString():'—'}</td>
@@ -373,6 +494,7 @@ function render(){
   }).join('');
 }
 
+// ── Sort headers ─────────────────────────────────────────────────────────────
 document.querySelectorAll('th[data-col]').forEach(th=>{
   th.addEventListener('click',()=>{
     const c=th.dataset.col;
@@ -384,8 +506,9 @@ document.querySelectorAll('th[data-col]').forEach(th=>{
 document.getElementById('srch').addEventListener('input',e=>{q=e.target.value;render();});
 document.querySelector('th[data-col="total_pnl"]').classList.add('desc');
 
-loadData();
-setInterval(loadData,5*60*1000);
+// ── Boot ─────────────────────────────────────────────────────────────────────
+loadAll();
+setInterval(loadAll, 5*60*1000);
 </script>
 </body>
 </html>
