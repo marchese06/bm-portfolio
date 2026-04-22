@@ -139,15 +139,14 @@
   <th data-col="max">Max $</th>
   <th data-col="max_pct">Max %</th>
   <th data-col="sell_stages">Sells</th>
-  <th data-col="realized">Realized P</th>
-  <th data-col="unrealized">Unrealized</th>
+  <th data-col="unrealized">At Risk</th>
   <th data-col="total_pnl">Net P&L</th>
   <th data-col="pnl_pct">P&L %</th>
   <th data-col="rem_pct">% Rem.</th>
   <th data-col="theme">Theme</th>
   <th data-col="status">Status</th>
 </tr></thead>
-<tbody id="tbody"><tr><td colspan="19"><div class="loading">Fetching live data...</div></td></tr></tbody>
+<tbody id="tbody"><tr><td colspan="18"><div class="loading">Fetching live data...</div></td></tr></tbody>
 </table>
 </div>
 <footer>
@@ -277,12 +276,18 @@ async function fetchAllPrices(trades){
       // Recalc P&L with new current price
       Object.assign(t, calcPnl(t));
     }));
-    // Re-render after each batch
+    // Re-render and update metric card after each batch
     render();
-    ps.textContent = `pricing ${i+batchSize}/${trades.length}…`;
+    buildMetrics();
+    ps.textContent = `pricing ${Math.min(i+batchSize,trades.length)}/${trades.length}…`;
     await new Promise(r => setTimeout(r, 150)); // small delay between batches
   }
   
+  // Always rebuild metrics and charts with final prices
+  buildMetrics();
+  buildCharts();
+  render();
+
   if(failed===0 && loaded>0){
     ps.textContent = `${loaded} live prices ✓`;
     ps.className = 'price-status done';
@@ -337,7 +342,7 @@ const tColor=t=>TC[t.theme]||TC[t.sector]||'#888';
 
 // ── Load CSV ─────────────────────────────────────────────────────────────────
 async function loadData(){
-  document.getElementById('tbody').innerHTML='<tr><td colspan="19"><div class="loading">Fetching data from Google Sheets...</div></td></tr>';
+  document.getElementById('tbody').innerHTML='<tr><td colspan="18"><div class="loading">Fetching data from Google Sheets...</div></td></tr>';
   document.getElementById('error-area').innerHTML='';
   try{
     const res=await fetch(CSV_URL+'&t='+Date.now());
@@ -413,7 +418,7 @@ async function loadData(){
   }catch(err){
     document.getElementById('error-area').innerHTML=`<div class="error-box">⚠ ${err.message}</div>`;
     document.getElementById('metrics').innerHTML='';
-    document.getElementById('tbody').innerHTML='<tr><td colspan="19"><div class="empty">Could not load data.</div></td></tr>';
+    document.getElementById('tbody').innerHTML='<tr><td colspan="18"><div class="empty">Could not load data.</div></td></tr>';
     document.getElementById('price-status').textContent='error';
     document.getElementById('price-status').className='price-status error';
   }
@@ -434,8 +439,7 @@ function buildMetrics(){
   const best=ALL.reduce((a,b)=>a.total_pnl>b.total_pnl?a:b,{total_pnl:-Infinity,ticker:'—'});
   document.getElementById('metrics').innerHTML=[
     {l:'Booked P&L',v:dol(totP),c:totP>=0?'g':'r',s:`realized only · excl. open`},
-    {l:'Realized',v:'+$'+totR.toLocaleString(),c:'g',s:'cash received from sells'},
-    {l:'Unrealized',v:'$'+totU.toLocaleString(),c:'b',s:'current value of open portion'},
+    {l:'Amount at Risk',v:'$'+totU.toLocaleString(),c:'b',s:'current value of open positions'},
     {l:'Hit 2x+',v:dbl,c:'g',s:`${h3} hit 3x · ${h4} hit 4x`},
     {l:'Best trade',v:best.ticker,c:'o',s:dol(best.total_pnl)+' net P&L'},
     {l:'Positions',v:n,c:'',s:'active · live prices'},
@@ -501,7 +505,7 @@ function render(){
   const d=getData();
   document.getElementById('cnt').textContent=d.length+' of '+ALL.length+' positions';
   const tb=document.getElementById('tbody');
-  if(!d.length){tb.innerHTML=`<tr><td colspan="19"><div class="empty">No positions match</div></td></tr>`;return;}
+  if(!d.length){tb.innerHTML=`<tr><td colspan="18"><div class="empty">No positions match</div></td></tr>`;return;}
   tb.innerHTML=d.map(t=>{
     const badge=t.status==='1/2 Open'?`<span class="badge b-half">½ open</span>`:`<span class="badge b-open">open</span>`;
     const stHtml=t.stages.length?t.stages.map(s=>`<span class="stage s${s[0]}">${s}</span>`).join(''):'<span class="dim" style="font-size:11px">—</span>';
@@ -530,7 +534,6 @@ function render(){
       <td class="mono dim">$${t.max}</td>
       <td class="mono dim">${pS(t.max_pct)}</td>
       <td><div class="stages">${stHtml}</div></td>
-      <td class="rpnl">${t.realized>0?'+$'+t.realized.toLocaleString():'—'}</td>
       <td class="upnl">${t.unrealized>0?'$'+t.unrealized.toLocaleString():'—'}</td>
       <td class="pnl ${pC(t.total_pnl)}">${dol(t.total_pnl)}</td>
       <td class="mono ${pC(t.pnl_pct)}">${t.pnl_pct>0?'+':''}${t.pnl_pct}%</td>
