@@ -222,20 +222,34 @@ const priceCache = {};
 async function fetchOptionPrice(symbol){
   if(!symbol) return null;
   if(priceCache[symbol] !== undefined) return priceCache[symbol];
-  try{
-    // Use Yahoo Finance v8 chart endpoint via CORS proxy
-    const url = `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?interval=1d&range=1d`;
-    const res = await fetch(url, {headers:{'Accept':'application/json'}});
-    if(!res.ok){ priceCache[symbol]=null; return null; }
-    const data = await res.json();
-    const meta = data?.chart?.result?.[0]?.meta;
-    const price = meta?.regularMarketPrice ?? meta?.previousClose ?? null;
-    priceCache[symbol] = price;
-    return price;
-  } catch(e){
-    priceCache[symbol] = null;
-    return null;
+
+  // Yahoo Finance blocks direct browser fetches (CORS). We try multiple CORS proxies in order.
+  const yahooUrl = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?interval=1d&range=1d`;
+  const proxies = [
+    `https://corsproxy.io/?url=${encodeURIComponent(yahooUrl)}`,
+    `https://api.allorigins.win/raw?url=${encodeURIComponent(yahooUrl)}`,
+    `https://proxy.cors.sh/${yahooUrl}`,
+  ];
+
+  for(const url of proxies){
+    try{
+      const res = await fetch(url, {
+        headers:{'Accept':'application/json','x-requested-with':'XMLHttpRequest'},
+        signal: AbortSignal.timeout(8000)
+      });
+      if(!res.ok) continue;
+      const data = await res.json();
+      const meta = data?.chart?.result?.[0]?.meta;
+      const price = meta?.regularMarketPrice ?? meta?.previousClose ?? null;
+      if(price !== null){
+        priceCache[symbol] = price;
+        return price;
+      }
+    } catch(e){ /* try next proxy */ }
   }
+
+  priceCache[symbol] = null;
+  return null;
 }
 
 async function fetchAllPrices(trades){
@@ -266,12 +280,16 @@ async function fetchAllPrices(trades){
     await new Promise(r => setTimeout(r, 150)); // small delay between batches
   }
   
-  if(failed===0){
+  if(failed===0 && loaded>0){
     ps.textContent = `${loaded} live prices ✓`;
     ps.className = 'price-status done';
-  } else {
-    ps.textContent = `${loaded} live · ${failed} unavailable`;
+  } else if(loaded===0){
+    ps.textContent = `prices unavailable (CORS blocked)`;
     ps.className = 'price-status error';
+    console.warn('All Yahoo Finance fetches failed — likely CORS. Open console for details.');
+  } else {
+    ps.textContent = `${loaded} live · ${failed} n/a`;
+    ps.className = loaded > failed ? 'price-status done' : 'price-status error';
   }
 }
 
