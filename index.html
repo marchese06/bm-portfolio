@@ -11,7 +11,7 @@
     --bg:#0a0b0e;--surface:#111318;--surface2:#181c24;
     --border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.16);
     --text:#f0f2f8;--text2:#c8cdd8;--text3:#a0a8b8;
-    --green:#00e5a0;--blue:#5b8cff;--red:#ff4d6d;--gold:#f5c842;--orange:#ff9f43;
+    --green:#00e5a0;--blue:#5b8cff;--red:#ff4d6d;--gold:#f5c842;
     --mono:'Space Mono',monospace;--sans:'DM Sans',sans-serif;
   }
   *{box-sizing:border-box;margin:0;padding:0;}
@@ -28,17 +28,15 @@
   .live-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s infinite;}
   @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.3;transform:scale(0.8)}}
 
-  /* METRICS */
   .metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:10px;margin-bottom:20px;}
   .mc{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:13px 15px;transition:border-color 0.2s;}
   .mc:hover{border-color:var(--border2);}
   .mc.hi{border-color:rgba(0,229,160,0.3);background:rgba(0,229,160,0.05);}
   .mc-label{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px;}
   .mc-val{font-family:var(--mono);font-size:22px;font-weight:700;line-height:1;}
-  .mc-val.g{color:var(--green);} .mc-val.b{color:var(--blue);} .mc-val.r{color:var(--red);} .mc-val.o{color:var(--gold);}
+  .mc-val.g{color:var(--green);}.mc-val.b{color:var(--blue);}.mc-val.r{color:var(--red);}.mc-val.o{color:var(--gold);}
   .mc-sub{font-size:12px;color:var(--text3);margin-top:4px;}
 
-  /* CHARTS */
   .charts{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:20px;}
   @media(max-width:900px){.charts{grid-template-columns:1fr;}}
   .cc{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:15px 17px;}
@@ -55,9 +53,8 @@
   .perf-wrap{flex:1;position:relative;height:15px;}
   .perf-zero{position:absolute;left:50%;top:0;bottom:0;width:1px;background:rgba(255,255,255,0.1);}
   .perf-bar{position:absolute;height:7px;top:4px;border-radius:2px;}
-  .perf-pct{font-family:var(--mono);font-size:11px;width:54px;flex-shrink:0;text-align:right;}
+  .perf-pct{font-family:var(--mono);font-size:11px;width:64px;flex-shrink:0;text-align:right;}
 
-  /* CONTROLS */
   .controls{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px;}
   .ctrl-label{font-family:var(--mono);font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.1em;}
   .fbtn{padding:4px 12px;border:1px solid var(--border);border-radius:20px;background:transparent;font-size:12px;font-family:var(--sans);color:var(--text2);cursor:pointer;transition:all 0.15s;}
@@ -68,7 +65,11 @@
   .srch:focus{border-color:var(--green);}
   .cnt{font-family:var(--mono);font-size:11px;color:var(--text3);}
 
-  /* TABLE */
+  .refresh-btn{padding:5px 14px;border:1px solid rgba(0,229,160,0.3);border-radius:20px;background:rgba(0,229,160,0.08);font-size:12px;font-family:var(--mono);color:var(--green);cursor:pointer;transition:all 0.15s;display:flex;align-items:center;gap:6px;}
+  .refresh-btn:hover{background:rgba(0,229,160,0.15);}
+  .spin{display:inline-block;animation:spin 1s linear infinite;}
+  @keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+
   .tbl-wrap{overflow-x:auto;background:var(--surface);border:1px solid var(--border);border-radius:12px;}
   table{width:100%;border-collapse:collapse;font-size:12.5px;}
   thead tr{border-bottom:1px solid var(--border);}
@@ -85,7 +86,7 @@
   .ctc{font-size:12px;color:var(--text3);white-space:nowrap;}
   .mono{font-family:var(--mono);font-size:12px;}
   .pos{color:var(--green);font-weight:500;}
-  .neg{color:var(--red);font-weight:500);}
+  .neg{color:var(--red);font-weight:500;}
   .dim{color:var(--text3);}
   .pnl{font-family:var(--mono);font-size:12px;font-weight:700;}
   .rpnl{font-family:var(--mono);font-size:11px;color:var(--green);}
@@ -93,21 +94,21 @@
   .badge{display:inline-block;padding:2px 7px;border-radius:4px;font-size:11px;font-family:var(--mono);font-weight:700;}
   .b-open{background:rgba(0,229,160,0.1);color:var(--green);border:1px solid rgba(0,229,160,0.2);}
   .b-half{background:rgba(91,140,255,0.1);color:var(--blue);border:1px solid rgba(91,140,255,0.25);}
-  .b-yes{color:var(--green);font-family:var(--mono);font-size:12px;font-weight:700;}
-  .b-no{color:rgba(255,255,255,0.22);font-family:var(--mono);font-size:12px;}
   .theme-cell{display:flex;align-items:center;font-size:12px;color:var(--text2);white-space:nowrap;}
   .tdot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:5px;flex-shrink:0;}
-  .empty{text-align:center;padding:48px;color:var(--text3);font-family:var(--mono);font-size:13px;}
-  /* Sell stage pills */
-  .stages{display:flex;gap:3px;flex-wrap:nowrap;}
+  .stages{display:flex;gap:3px;}
   .stage{font-family:var(--mono);font-size:10px;padding:1px 5px;border-radius:3px;white-space:nowrap;}
   .s2{background:rgba(0,229,160,0.12);color:var(--green);}
   .s3{background:rgba(91,140,255,0.12);color:var(--blue);}
   .s4{background:rgba(245,200,66,0.12);color:var(--gold);}
-  /* Legend */
-  .legend{display:flex;gap:16px;margin-bottom:10px;flex-wrap:wrap;}
+  .empty{text-align:center;padding:48px;color:var(--text3);font-family:var(--mono);font-size:13px;}
+  .loading{text-align:center;padding:60px;color:var(--text3);font-family:var(--mono);font-size:13px;}
+  .loading-dot{display:inline-block;animation:pulse 1s infinite;}
+  .error-box{background:rgba(255,77,109,0.08);border:1px solid rgba(255,77,109,0.2);border-radius:8px;padding:16px 20px;margin-bottom:16px;font-family:var(--mono);font-size:12px;color:var(--red);}
+  .legend{display:flex;gap:16px;margin-bottom:10px;flex-wrap:wrap;align-items:center;}
   .legend-item{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--text3);}
   .legend-dot{width:8px;height:8px;border-radius:2px;}
+  .last-updated{font-family:var(--mono);font-size:10px;color:var(--text3);margin-left:auto;}
   footer{margin-top:36px;padding-top:16px;border-top:1px solid var(--border);display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;}
   footer p{font-family:var(--mono);font-size:10px;color:rgba(255,255,255,0.18);letter-spacing:0.08em;}
   ::-webkit-scrollbar{width:4px;height:4px;}
@@ -125,24 +126,27 @@
     <h2>Active Portfolio Dashboard</h2>
   </div>
   <div class="hdr-right">
-    <div class="hdr-date">APR 20, 2026</div>
+    <div class="hdr-date" id="hdr-date">Loading...</div>
     <div class="live"><span class="live-dot"></span>LIVE</div>
   </div>
 </header>
 
-<div class="metrics" id="metrics"></div>
+<div id="error-area"></div>
+<div class="metrics" id="metrics"><div class="loading">Loading trades from Google Sheets<span class="loading-dot">...</span></div></div>
 <div class="charts" id="charts"></div>
 
 <div class="legend">
-  <span class="legend-item"><span class="legend-dot s2" style="background:rgba(0,229,160,0.5)"></span>Sold 50% at 2x</span>
-  <span class="legend-item"><span class="legend-dot s3" style="background:rgba(91,140,255,0.5)"></span>Sold 75% of rem. at 3x</span>
-  <span class="legend-item"><span class="legend-dot s4" style="background:rgba(245,200,66,0.5)"></span>Sold rest at 4x</span>
-  <span class="legend-item" style="margin-left:8px;color:var(--text3);font-size:11px;">P&L assumes ~$1,000 per position. Realized = locked profits. Unrealized = current value of remaining stake.</span>
+  <span class="legend-item"><span class="legend-dot" style="background:rgba(0,229,160,0.6)"></span>Sold 50% at 2x</span>
+  <span class="legend-item"><span class="legend-dot" style="background:rgba(91,140,255,0.6)"></span>Sold 75% of rem. at 3x</span>
+  <span class="legend-item"><span class="legend-dot" style="background:rgba(245,200,66,0.6)"></span>Sold rest at 4x</span>
+  <span class="legend-item" style="font-size:11px;">P&L assumes ~$1,000/position · Realized = locked · Unrealized = current open value</span>
+  <span class="last-updated" id="last-updated"></span>
 </div>
 
 <div class="controls">
   <span class="ctrl-label">Filter:</span>
   <div id="filters" style="display:flex;gap:6px;flex-wrap:wrap;"></div>
+  <button class="refresh-btn" onclick="loadData()">↻ Refresh</button>
   <input class="srch" id="srch" placeholder="Search ticker…">
   <span class="cnt" id="cnt"></span>
 </div>
@@ -162,81 +166,139 @@
   <th data-col="realized">Realized</th>
   <th data-col="unrealized">Unrealized</th>
   <th data-col="total_pnl">Net P&L</th>
-  <th data-col="rem_pct">% Remaining</th>
+  <th data-col="rem_pct">% Rem.</th>
   <th data-col="theme">Theme</th>
   <th data-col="status">Status</th>
 </tr></thead>
-<tbody id="tbody"></tbody>
+<tbody id="tbody"><tr><td colspan="15"><div class="loading">Fetching live data...</div></td></tr></tbody>
 </table>
 </div>
 
 <footer>
-  <p>BREAKOUT MULTIPLIER — SIMULATED PORTFOLIO — ~$1,000 PER POSITION — STAGED EXIT MODEL</p>
-  <p>GENERATED APR 20, 2026</p>
+  <p>BREAKOUT MULTIPLIER · LIVE FROM GOOGLE SHEETS · ~$1,000 PER POSITION · STAGED EXIT MODEL</p>
+  <p id="footer-date"></p>
 </footer>
 </div>
 
 <script>
-const RAW = [
-  {ticker:'ABBV',name:'AbbVie Inc',sector:'Healthcare',theme:'Healthcare',entry_date:'02/27/26',contract:'May 15 Call',entry:4.85,current:0.17,max:6.85,curr_pct:-96,max_pct:41,doubled:'NO',status:'Open'},
-  {ticker:'DVN',name:'Devon Energy',sector:'Energy',theme:'Energy',entry_date:'03/12/26',contract:'May 15 Call',entry:1.04,current:0.25,max:3.36,curr_pct:-76,max_pct:223,doubled:'YES',status:'1/2 Open'},
-  {ticker:'BTU',name:'Peabody Energy',sector:'Energy',theme:'Coal',entry_date:'03/12/26',contract:'Jul 17 Call',entry:2.45,current:0.20,max:4.90,curr_pct:-92,max_pct:100,doubled:'YES',status:'1/2 Open'},
-  {ticker:'CIFR',name:'Cipher Mining',sector:'Financial',theme:'Crypto/Data Ctr',entry_date:'03/25/26',contract:'May 15 Call',entry:1.10,current:1.74,max:1.86,curr_pct:58,max_pct:69,doubled:'NO',status:'Open'},
-  {ticker:'INTC',name:'Intel Corp',sector:'Technology',theme:'Short Semis',entry_date:'03/27/26',contract:'May 15 Put',entry:2.30,current:0.06,max:3.04,curr_pct:-97,max_pct:32,doubled:'NO',status:'Open'},
-  {ticker:'NVDA',name:'NVIDIA Corp',sector:'Technology',theme:'Short Semis',entry_date:'03/30/26',contract:'May 15 Put',entry:5.35,current:0.28,max:6.10,curr_pct:-95,max_pct:14,doubled:'NO',status:'Open'},
-  {ticker:'NVTS',name:'Navitas Semi',sector:'Technology',theme:'Semis',entry_date:'04/08/26',contract:'May 15 Call',entry:0.47,current:1.77,max:2.15,curr_pct:277,max_pct:357,doubled:'YES',status:'1/2 Open'},
-  {ticker:'NVTS',name:'Navitas Semi',sector:'Technology',theme:'Semis',entry_date:'04/08/26',contract:'Jun 18 Call',entry:0.83,current:2.35,max:2.75,curr_pct:183,max_pct:231,doubled:'YES',status:'1/2 Open'},
-  {ticker:'VKTX',name:'Viking Therapeutics',sector:'Healthcare',theme:'Biotech',entry_date:'04/09/26',contract:'May 15 Call',entry:1.40,current:1.30,max:2.00,curr_pct:-7,max_pct:43,doubled:'NO',status:'Open'},
-  {ticker:'CIFR',name:'Cipher Mining',sector:'Financial',theme:'Crypto/Data Ctr',entry_date:'04/09/26',contract:'May 15 Call',entry:0.83,current:1.74,max:1.86,curr_pct:110,max_pct:124,doubled:'YES',status:'1/2 Open'},
-  {ticker:'ORCL',name:'Oracle Corp',sector:'Technology',theme:'Software',entry_date:'04/10/26',contract:'May 15 Call',entry:3.15,current:23.30,max:31.35,curr_pct:640,max_pct:895,doubled:'YES',status:'1/2 Open'},
-  {ticker:'ETHA',name:'iShares Ethereum',sector:'Financial',theme:'Crypto',entry_date:'04/10/26',contract:'May 15 Call',entry:0.60,current:1.04,max:1.20,curr_pct:73,max_pct:100,doubled:'YES',status:'1/2 Open'},
-  {ticker:'ETHA',name:'iShares Ethereum',sector:'Financial',theme:'Crypto',entry_date:'04/10/26',contract:'Jun 18 Call',entry:0.87,current:1.33,max:1.42,curr_pct:53,max_pct:63,doubled:'NO',status:'Open'},
-  {ticker:'ASTS',name:'AST SpaceMobile',sector:'Technology',theme:'Space',entry_date:'04/13/26',contract:'May 15 Call',entry:5.20,current:2.10,max:5.20,curr_pct:-60,max_pct:0,doubled:'NO',status:'Open'},
-  {ticker:'BLSH',name:'Bullish',sector:'Technology',theme:'Crypto',entry_date:'04/13/26',contract:'Jun 18 Call',entry:2.55,current:4.35,max:4.63,curr_pct:71,max_pct:82,doubled:'NO',status:'Open'},
-  {ticker:'NIO',name:'NIO Inc ADR',sector:'Consumer Cyclical',theme:'China',entry_date:'04/14/26',contract:'Jun 18 Call',entry:0.29,current:0.38,max:0.45,curr_pct:31,max_pct:55,doubled:'NO',status:'Open'},
-  {ticker:'NIO',name:'NIO Inc ADR',sector:'Consumer Cyclical',theme:'China',entry_date:'04/14/26',contract:'Aug 21 Call',entry:0.36,current:0.46,max:0.50,curr_pct:28,max_pct:39,doubled:'NO',status:'Open'},
-  {ticker:'BMNR',name:'BitMine Immersion',sector:'Financial',theme:'Crypto',entry_date:'04/15/26',contract:'May 15 Call',entry:0.86,current:1.12,max:1.62,curr_pct:30,max_pct:88,doubled:'NO',status:'Open'},
-  {ticker:'AI',name:'C3.ai Inc',sector:'Technology',theme:'Software',entry_date:'04/15/26',contract:'May 15 Call',entry:0.55,current:0.47,max:0.55,curr_pct:-15,max_pct:0,doubled:'NO',status:'Open'},
-  {ticker:'SOUN',name:'SoundHound AI',sector:'Technology',theme:'Software',entry_date:'04/16/26',contract:'May 15 Call',entry:0.35,current:0.36,max:0.42,curr_pct:3,max_pct:20,doubled:'NO',status:'Open'},
-  {ticker:'SE',name:'Sea Ltd ADR',sector:'Consumer Cyclical',theme:'Software',entry_date:'04/16/26',contract:'Jun 18 Call',entry:3.35,current:3.45,max:4.10,curr_pct:3,max_pct:22,doubled:'NO',status:'Open'},
-  {ticker:'RIOT',name:'Riot Platforms',sector:'Financial',theme:'Crypto/Data Ctr',entry_date:'04/17/26',contract:'May 15 Call',entry:0.84,current:1.09,max:1.25,curr_pct:30,max_pct:49,doubled:'NO',status:'Open'},
-  {ticker:'RIOT',name:'Riot Platforms',sector:'Financial',theme:'Crypto/Data Ctr',entry_date:'04/17/26',contract:'Jun 18 Call',entry:0.61,current:0.78,max:0.88,curr_pct:28,max_pct:44,doubled:'NO',status:'Open'},
-  {ticker:'ONDS',name:'Ondas Holdings',sector:'Technology',theme:'Drones',entry_date:'04/20/26',contract:'Jun 18 Call',entry:0.68,current:0.68,max:0.68,curr_pct:0,max_pct:0,doubled:'NO',status:'Open'},
-];
+const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRnBssDB2zK9HpOp9kb0zYGWAjlhR-GWxSKpqag06rzDm9myu_rN_-wXmGhcFxVchwqXr-jatRToc2b/pub?gid=1943882608&single=true&output=csv';
 
-const TC={
-  'Software':'#5b8cff','Crypto/Data Ctr':'#7f5be8','Crypto':'#a56af5',
+const TC = {
+  'Software':'#5b8cff','Crypto/Data Center':'#7f5be8','Crypto':'#a56af5',
   'Semis':'#00e5a0','Short Semis':'#ff6b35','China':'#ff4d6d',
   'Biotech':'#f060b5','Space':'#00c9d4','Healthcare':'#68c44a',
-  'Energy':'#f5c842','Coal':'#8a8fa8','Drones':'#00b89f'
+  'Energy':'#f5c842','Coal':'#8a8fa8','Drones':'#00b89f',
+  'Software - Infrastructure':'#5b8cff','Software - Application':'#4a7be0',
+  'Communication Equipment':'#00c9d4','Semiconductors':'#00e5a0',
+  'Capital Markets':'#a56af5','Exchange Traded Fund':'#7f5be8',
+  'Auto Manufacturers':'#ff4d6d','Biotechnology':'#f060b5',
+  'Drug Manufacturers - General':'#68c44a','Oil & Gas E&P':'#f5c842',
+  'Thermal Coal':'#8a8fa8','Information Technology Services':'#5b8cff',
 };
 
-// Staged P&L calculation
+function tcColor(theme, sector, industry) {
+  return TC[theme] || TC[sector] || TC[industry] || '#888';
+}
+
+let ALL_TRADES = [];
+let sCol = 'total_pnl', sDir = 'desc', filt = 'All', q = '';
+
+function parseCSV(text) {
+  const lines = text.trim().split('\n');
+  if (lines.length < 2) return [];
+  const headers = lines[0].split(',').map(h => h.replace(/^"|"$/g, '').trim());
+  const rows = [];
+  for (let i = 1; i < lines.length; i++) {
+    const vals = parseCSVLine(lines[i]);
+    if (vals.length < 5) continue;
+    const row = {};
+    headers.forEach((h, idx) => { row[h] = (vals[idx] || '').replace(/^"|"$/g, '').trim(); });
+    rows.push(row);
+  }
+  return rows;
+}
+
+function parseCSVLine(line) {
+  const result = [];
+  let cur = '', inQ = false;
+  for (let i = 0; i < line.length; i++) {
+    const c = line[i];
+    if (c === '"') { inQ = !inQ; }
+    else if (c === ',' && !inQ) { result.push(cur); cur = ''; }
+    else { cur += c; }
+  }
+  result.push(cur);
+  return result;
+}
+
+function parseMoney(s) {
+  if (!s) return null;
+  const n = parseFloat(s.replace(/[$,%\s]/g, ''));
+  return isNaN(n) ? null : n;
+}
+
+function parsePct(s) {
+  if (!s) return null;
+  const clean = s.replace(/[%\s]/g, '');
+  const n = parseFloat(clean);
+  return isNaN(n) ? null : n;
+}
+
+function mapRow(row) {
+  // Try to find the right column names — the sheet may have nested headers
+  const ticker = row['Stock/Ticker'] || row['Ticker'] || row['ticker'] || '';
+  const name = row['Stock/Name'] || row['Description/Name'] || row['Name'] || '';
+  const sector = row['Stock/Sector'] || row['Description/Sector'] || row['Sector'] || '';
+  const industry = row['Stock/Industry'] || row['Description/Industry'] || row['Industry'] || '';
+  const theme = row['Stock/Theme'] || row['Description/Theme'] || row['Theme'] || '';
+  const csPrice = parseMoney(row['Stock/C/S Price'] || row['Description/C/S Price'] || row['C/S Price'] || '');
+  const entryDate = row['Contract Info/Entry Date'] || row['Trade Info/Entry Date'] || row['Entry Date'] || '';
+  const strike = parseMoney(row['Contract Info/Option Strike'] || row['Trade Info/Option Strike'] || row['Option Strike'] || '');
+  const contract = row['Contract Info/Contract'] || row['Trade Info/Contract'] || row['Contract'] || '';
+  const entry = parseMoney(row['Contract Price/Entry'] || row['Contract Price/Entry '] || row['Entry'] || row['Entry '] || '');
+  const current = parseMoney(row['Contract Price/Current'] || row['Contract Price/Current '] || row['Current'] || row['Current '] || '');
+  const max = parseMoney(row['Contract Price/Max'] || row['Max'] || '');
+  const currPct = parsePct(row['Performance/Current %'] || row['Contract Price/Current %'] || row['Current %'] || '');
+  const maxPct = parsePct(row['Performance/Max %'] || row['Max %'] || '');
+  const status = row['Trade Status'] || row['Status'] || '';
+
+  // Only include rows that look like real open trades
+  if (!ticker || !entry || entry <= 0) return null;
+  if (!status || (!status.toLowerCase().includes('open') && status !== 'Open' && status !== '1/2 Open')) return null;
+  if (status.toLowerCase().includes('closed') || status.toLowerCase().includes('rolled')) return null;
+
+  return {
+    ticker,
+    name: name || ticker,
+    sector,
+    industry,
+    theme: theme || sector || industry,
+    entry_date: entryDate.trim(),
+    strike: strike || 0,
+    contract: contract.trim(),
+    entry: entry,
+    current: current || entry,
+    max: max || current || entry,
+    curr_pct: currPct !== null ? currPct : (current && entry ? Math.round((current/entry - 1)*100) : 0),
+    max_pct: maxPct !== null ? maxPct : 0,
+    status: status.includes('1/2') ? '1/2 Open' : 'Open',
+  };
+}
+
 function calcPnl(t) {
   const start = 1000;
   const mult = t.max / t.entry;
   let realized = 0, remUnits = 1.0;
   const stages = [];
-
   if (mult >= 2) {
-    // Sell 50% at 2x — position doubles, half sold = $1000 proceeds from $500 cost
-    realized += 1000;
-    remUnits = 0.5;
-    stages.push('2x');
+    realized += 1000; remUnits = 0.5; stages.push('2x');
     if (mult >= 3) {
-      // Remaining 0.5 units now worth 0.5 * 3 * $1000 = $1500, sell 75% = $1125
-      realized += remUnits * 3 * start * 0.75;
-      remUnits *= 0.25;
-      stages.push('3x');
+      realized += remUnits * 3 * start * 0.75; remUnits *= 0.25; stages.push('3x');
       if (mult >= 4) {
-        // Sell remaining at 4x
-        realized += remUnits * 4 * start;
-        remUnits = 0;
-        stages.push('4x');
+        realized += remUnits * 4 * start; remUnits = 0; stages.push('4x');
       }
     }
   }
-
   const unrealized = remUnits * (t.current / t.entry) * start;
   const totalPnl = realized + unrealized - start;
   return {
@@ -245,138 +307,184 @@ function calcPnl(t) {
     total_pnl: Math.round(totalPnl),
     rem_pct: Math.round(remUnits * 100),
     stages,
-    curr_pnl: Math.round(totalPnl), // alias for sorting
   };
 }
 
-// Enrich data
-const T = RAW.map(t => ({...t, ...calcPnl(t)}));
+async function loadData() {
+  document.getElementById('tbody').innerHTML = '<tr><td colspan="15"><div class="loading">Fetching live data from Google Sheets...</div></td></tr>';
+  document.getElementById('error-area').innerHTML = '';
 
-let sCol='total_pnl', sDir='desc', filt='All', q='';
-const pC = v => v>0?'pos':v<0?'neg':'dim';
-const pS = v => (v>0?'+':'')+v+'%';
-const dol = v => (v>=0?'+$':'-$')+Math.abs(v).toLocaleString();
-const dolR = v => (v>0?'+$':v<0?'-$':'$')+Math.abs(v).toLocaleString();
+  try {
+    const res = await fetch(CSV_URL + '&t=' + Date.now());
+    if (!res.ok) throw new Error('Could not fetch sheet — status ' + res.status);
+    const text = await res.text();
+    const rows = parseCSV(text);
+    const mapped = rows.map(mapRow).filter(Boolean);
+
+    if (mapped.length === 0) {
+      throw new Error('No open trades found in sheet. Check the tab is published correctly.');
+    }
+
+    ALL_TRADES = mapped.map(t => ({ ...t, ...calcPnl(t) }));
+
+    const now = new Date();
+    const dateStr = now.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+    document.getElementById('hdr-date').textContent = dateStr.toUpperCase();
+    document.getElementById('last-updated').textContent = 'Updated ' + timeStr;
+    document.getElementById('footer-date').textContent = 'LAST FETCHED ' + dateStr.toUpperCase() + ' · ' + timeStr;
+
+    buildMetrics();
+    buildCharts();
+    buildFilters();
+    render();
+
+  } catch (err) {
+    document.getElementById('error-area').innerHTML = `<div class="error-box">⚠ ${err.message}</div>`;
+    document.getElementById('tbody').innerHTML = '<tr><td colspan="15"><div class="empty">Could not load data. Check the sheet is published to web.</div></td></tr>';
+    document.getElementById('metrics').innerHTML = '';
+  }
+}
+
+const pC = v => v > 0 ? 'pos' : v < 0 ? 'neg' : 'dim';
+const pS = v => (v > 0 ? '+' : '') + v + '%';
+const dol = v => (v >= 0 ? '+$' : '-$') + Math.abs(v).toLocaleString();
 
 function buildMetrics() {
-  const n=T.length;
-  const totRealized = T.reduce((s,t)=>s+t.realized,0);
-  const totUnrealized = T.reduce((s,t)=>s+t.unrealized,0);
-  const totPnl = T.reduce((s,t)=>s+t.total_pnl,0);
+  const n = ALL_TRADES.length;
+  const totReal = ALL_TRADES.reduce((s, t) => s + t.realized, 0);
+  const totUnreal = ALL_TRADES.reduce((s, t) => s + t.unrealized, 0);
+  const totPnl = ALL_TRADES.reduce((s, t) => s + t.total_pnl, 0);
   const deployed = n * 1000;
-  const dbl = T.filter(t=>t.doubled==='YES').length;
-  const hit3 = T.filter(t=>t.stages.includes('3x')).length;
-  const hit4 = T.filter(t=>t.stages.includes('4x')).length;
-  const best = T.reduce((a,b)=>a.total_pnl>b.total_pnl?a:b);
-  document.getElementById('metrics').innerHTML=[
-    {l:'Net P&L',v:dol(totPnl),c:totPnl>=0?'g':'r',s:`on $${(deployed/1000).toFixed(0)}k deployed (${(totPnl/deployed*100).toFixed(1)}%)`},
-    {l:'Realized (locked)',v:'+$'+totRealized.toLocaleString(),c:'g',s:'profits taken off table'},
-    {l:'Unrealized (open)',v:'$'+totUnrealized.toLocaleString(),c:'b',s:'current value of stakes'},
-    {l:'Hit 2x+',v:dbl,c:'g',s:`${hit3} hit 3x · ${hit4} hit 4x`},
-    {l:'Best trade',v:best.ticker,c:'o',s:dol(best.total_pnl)+' net P&L'},
-    {l:'Positions',v:n,c:'',s:'active as of Apr 20, 2026'},
-  ].map(m=>`<div class="mc ${m.c==='o'?'hi':''}"><div class="mc-label">${m.l}</div><div class="mc-val ${m.c}">${m.v}</div><div class="mc-sub">${m.s}</div></div>`).join('');
+  const dbl = ALL_TRADES.filter(t => t.stages.includes('2x')).length;
+  const hit3 = ALL_TRADES.filter(t => t.stages.includes('3x')).length;
+  const hit4 = ALL_TRADES.filter(t => t.stages.includes('4x')).length;
+  const best = ALL_TRADES.reduce((a, b) => a.total_pnl > b.total_pnl ? a : b);
+
+  document.getElementById('metrics').innerHTML = [
+    { l: 'Net P&L', v: dol(totPnl), c: totPnl >= 0 ? 'g' : 'r', s: `on $${n}k deployed (${(totPnl/deployed*100).toFixed(1)}%)` },
+    { l: 'Realized', v: '+$' + totReal.toLocaleString(), c: 'g', s: 'locked profits off table' },
+    { l: 'Unrealized', v: '$' + totUnreal.toLocaleString(), c: 'b', s: 'current open value' },
+    { l: 'Hit 2x+', v: dbl, c: 'g', s: `${hit3} hit 3x · ${hit4} hit 4x` },
+    { l: 'Best trade', v: best.ticker, c: 'o', s: dol(best.total_pnl) + ' net P&L' },
+    { l: 'Positions', v: n, c: '', s: 'active · live from sheet' },
+  ].map(m => `<div class="mc ${m.c === 'o' ? 'hi' : ''}"><div class="mc-label">${m.l}</div><div class="mc-val ${m.c}">${m.v}</div><div class="mc-sub">${m.s}</div></div>`).join('');
 }
 
 function buildCharts() {
-  const tm={},sm={};
-  T.forEach(t=>{tm[t.theme]=(tm[t.theme]||0)+1;sm[t.sector]=(sm[t.sector]||0)+1;});
-  const themes=Object.entries(tm).sort((a,b)=>b[1]-a[1]);
-  const sectors=Object.entries(sm).sort((a,b)=>b[1]-a[1]);
-  const tMax=themes[0][1],sMax=sectors[0][1];
-  const sorted=[...T].sort((a,b)=>b.total_pnl-a.total_pnl);
-  const perf=[...sorted.slice(0,5),...sorted.slice(-3)];
-  const pMax=Math.max(...perf.map(t=>Math.abs(t.total_pnl)));
+  const tm = {}, sm = {};
+  ALL_TRADES.forEach(t => {
+    const th = t.theme || t.sector || 'Other';
+    tm[th] = (tm[th] || 0) + 1;
+    sm[t.sector || 'Other'] = (sm[t.sector || 'Other'] || 0) + 1;
+  });
+  const themes = Object.entries(tm).sort((a, b) => b[1] - a[1]).slice(0, 10);
+  const sectors = Object.entries(sm).sort((a, b) => b[1] - a[1]);
+  const tMax = themes[0][1], sMax = sectors[0][1];
+  const sorted = [...ALL_TRADES].sort((a, b) => b.total_pnl - a.total_pnl);
+  const perf = [...sorted.slice(0, 5), ...sorted.slice(-3)];
+  const pMax = Math.max(...perf.map(t => Math.abs(t.total_pnl))) || 1;
 
-  document.getElementById('charts').innerHTML=`
+  document.getElementById('charts').innerHTML = `
     <div class="cc"><div class="cc-title">By theme</div>
-      ${themes.map(([th,c])=>`<div class="br"><div class="br-label" onclick="setF('${th}')">${th}</div><div class="br-track"><div class="br-fill" style="width:${Math.round(c/tMax*100)}%;background:${TC[th]||'#888'}"></div></div><div class="br-cnt">${c}</div></div>`).join('')}
+      ${themes.map(([th, c]) => `<div class="br"><div class="br-label" onclick="setF('${th}')">${th}</div><div class="br-track"><div class="br-fill" style="width:${Math.round(c/tMax*100)}%;background:${tcColor(th,'','')}"></div></div><div class="br-cnt">${c}</div></div>`).join('')}
     </div>
     <div class="cc"><div class="cc-title">By sector</div>
-      ${sectors.map(([s,c])=>`<div class="br"><div class="br-label">${s}</div><div class="br-track"><div class="br-fill" style="width:${Math.round(c/sMax*100)}%;background:#5b8cff"></div></div><div class="br-cnt">${c}</div></div>`).join('')}
+      ${sectors.map(([s, c]) => `<div class="br"><div class="br-label">${s}</div><div class="br-track"><div class="br-fill" style="width:${Math.round(c/sMax*100)}%;background:#5b8cff"></div></div><div class="br-cnt">${c}</div></div>`).join('')}
     </div>
-    <div class="cc"><div class="cc-title">Net P&L by position (~$1k each)</div>
-      ${perf.map(t=>{
-        const p=t.total_pnl,f=Math.abs(p)/pMax;
-        const col=p>0?'#00e5a0':'#ff4d6d';
-        const left=p>=0?50:50-f*47,w=f*47;
-        return `<div class="perf-row" onclick="setF('${t.theme}')">
-          <div class="perf-tick" style="color:${TC[t.theme]||'#888'}">${t.ticker}</div>
+    <div class="cc"><div class="cc-title">Net P&L per position (~$1k)</div>
+      ${perf.map(t => {
+        const p = t.total_pnl, f = Math.abs(p) / pMax;
+        const col = p > 0 ? '#00e5a0' : '#ff4d6d';
+        const left = p >= 0 ? 50 : 50 - f * 47, w = f * 47;
+        return `<div class="perf-row" onclick="setF('${t.theme || t.sector}')">
+          <div class="perf-tick" style="color:${tcColor(t.theme,t.sector,t.industry)}">${t.ticker}</div>
           <div class="perf-wrap"><div class="perf-zero"></div><div class="perf-bar" style="left:${left}%;width:${w}%;background:${col}"></div></div>
-          <div class="perf-pct ${p>0?'pos':'neg'}">${p>=0?'+$':'-$'}${Math.abs(p).toLocaleString()}</div>
+          <div class="perf-pct ${p > 0 ? 'pos' : 'neg'}">${p >= 0 ? '+$' : '-$'}${Math.abs(p).toLocaleString()}</div>
         </div>`;
       }).join('')}
     </div>`;
 }
 
 function buildFilters() {
-  const fs=['All','Winners','Losers','Hit 2x','Hit 3x+','Hit 4x','1/2 Open','Full Open',...Object.keys(TC).filter(k=>T.some(t=>t.theme===k))];
-  document.getElementById('filters').innerHTML=fs.map(f=>`<button class="fbtn ${f===filt?'on':''}" onclick="setF('${f}')">${f}</button>`).join('');
+  const themes = [...new Set(ALL_TRADES.map(t => t.theme || t.sector).filter(Boolean))];
+  const fs = ['All', 'Winners', 'Losers', 'Hit 2x', 'Hit 3x+', 'Hit 4x', '1/2 Open', 'Full Open', ...themes];
+  document.getElementById('filters').innerHTML = fs.map(f =>
+    `<button class="fbtn ${f === filt ? 'on' : ''}" onclick="setF('${f}')">${f}</button>`
+  ).join('');
 }
-function setF(f){filt=f;buildFilters();render();}
+
+function setF(f) { filt = f; buildFilters(); render(); }
 
 function getData() {
-  let d=[...T];
-  if(filt==='Winners') d=d.filter(t=>t.total_pnl>0);
-  else if(filt==='Losers') d=d.filter(t=>t.total_pnl<0);
-  else if(filt==='Hit 2x') d=d.filter(t=>t.stages.includes('2x'));
-  else if(filt==='Hit 3x+') d=d.filter(t=>t.stages.includes('3x'));
-  else if(filt==='Hit 4x') d=d.filter(t=>t.stages.includes('4x'));
-  else if(filt==='1/2 Open') d=d.filter(t=>t.status==='1/2 Open');
-  else if(filt==='Full Open') d=d.filter(t=>t.status==='Open');
-  else if(filt!=='All') d=d.filter(t=>t.theme===filt);
-  if(q){const ql=q.toLowerCase();d=d.filter(t=>t.ticker.toLowerCase().includes(ql)||t.name.toLowerCase().includes(ql)||t.theme.toLowerCase().includes(ql)||t.contract.toLowerCase().includes(ql));}
-  d.sort((a,b)=>{
-    let va=a[sCol],vb=b[sCol];
-    if(typeof va==='string'){va=va.toLowerCase();vb=vb.toLowerCase();}
-    if(va===null)va=-Infinity;if(vb===null)vb=-Infinity;
-    return sDir==='asc'?(va<vb?-1:va>vb?1:0):(va>vb?-1:va<vb?1:0);
+  let d = [...ALL_TRADES];
+  if (filt === 'Winners') d = d.filter(t => t.total_pnl > 0);
+  else if (filt === 'Losers') d = d.filter(t => t.total_pnl < 0);
+  else if (filt === 'Hit 2x') d = d.filter(t => t.stages.includes('2x'));
+  else if (filt === 'Hit 3x+') d = d.filter(t => t.stages.includes('3x'));
+  else if (filt === 'Hit 4x') d = d.filter(t => t.stages.includes('4x'));
+  else if (filt === '1/2 Open') d = d.filter(t => t.status === '1/2 Open');
+  else if (filt === 'Full Open') d = d.filter(t => t.status === 'Open');
+  else if (filt !== 'All') d = d.filter(t => (t.theme || t.sector) === filt);
+  if (q) {
+    const ql = q.toLowerCase();
+    d = d.filter(t => t.ticker.toLowerCase().includes(ql) || t.name.toLowerCase().includes(ql) || (t.theme || '').toLowerCase().includes(ql) || t.contract.toLowerCase().includes(ql));
+  }
+  d.sort((a, b) => {
+    let va = a[sCol], vb = b[sCol];
+    if (typeof va === 'string') { va = va.toLowerCase(); vb = vb.toLowerCase(); }
+    if (va === null || va === undefined) va = -Infinity;
+    if (vb === null || vb === undefined) vb = -Infinity;
+    return sDir === 'asc' ? (va < vb ? -1 : va > vb ? 1 : 0) : (va > vb ? -1 : va < vb ? 1 : 0);
   });
   return d;
 }
 
 function render() {
-  const d=getData();
-  document.getElementById('cnt').textContent=d.length+' of '+T.length+' positions';
-  const tb=document.getElementById('tbody');
-  if(!d.length){tb.innerHTML=`<tr><td colspan="15"><div class="empty">No positions match</div></td></tr>`;return;}
-  tb.innerHTML=d.map(t=>{
-    const badge=t.status==='1/2 Open'?`<span class="badge b-half">½ open</span>`:`<span class="badge b-open">open</span>`;
-    const stagesHtml=t.stages.length?t.stages.map(s=>`<span class="stage s${s[0]}">${s}</span>`).join(''):'<span style="color:var(--text3);font-size:11px;">—</span>';
-    const remStr=t.rem_pct>0?`${t.rem_pct}%`:`<span style="color:var(--text3)">closed</span>`;
+  const d = getData();
+  document.getElementById('cnt').textContent = d.length + ' of ' + ALL_TRADES.length + ' positions';
+  const tb = document.getElementById('tbody');
+  if (!d.length) { tb.innerHTML = `<tr><td colspan="15"><div class="empty">No positions match</div></td></tr>`; return; }
+  tb.innerHTML = d.map(t => {
+    const badge = t.status === '1/2 Open' ? `<span class="badge b-half">½ open</span>` : `<span class="badge b-open">open</span>`;
+    const stHtml = t.stages.length ? t.stages.map(s => `<span class="stage s${s[0]}">${s}</span>`).join('') : '<span style="color:var(--text3);font-size:11px;">—</span>';
+    const remStr = t.rem_pct > 0 ? `${t.rem_pct}%` : `<span style="color:var(--text3)">closed</span>`;
+    const color = tcColor(t.theme, t.sector, t.industry);
     return `<tr>
       <td class="tc">${t.ticker}</td>
-      <td class="nc">${t.name}</td>
+      <td class="nc" title="${t.name}">${t.name}</td>
       <td class="dc">${t.entry_date}</td>
       <td class="ctc">${t.contract}</td>
       <td class="mono">$${t.entry}</td>
       <td class="mono">$${t.current}</td>
       <td class="mono ${pC(t.curr_pct)}">${pS(t.curr_pct)}</td>
       <td class="mono dim">${pS(t.max_pct)}</td>
-      <td><div class="stages">${stagesHtml}</div></td>
-      <td class="rpnl">${t.realized>0?'+$'+t.realized.toLocaleString():'—'}</td>
+      <td><div class="stages">${stHtml}</div></td>
+      <td class="rpnl">${t.realized > 0 ? '+$' + t.realized.toLocaleString() : '—'}</td>
       <td class="upnl">$${t.unrealized.toLocaleString()}</td>
       <td class="pnl ${pC(t.total_pnl)}">${dol(t.total_pnl)}</td>
       <td class="mono dim">${remStr}</td>
-      <td><div class="theme-cell"><span class="tdot" style="background:${TC[t.theme]||'#888'}"></span>${t.theme}</div></td>
+      <td><div class="theme-cell"><span class="tdot" style="background:${color}"></span>${t.theme || t.sector || '—'}</div></td>
       <td>${badge}</td>
     </tr>`;
   }).join('');
 }
 
-document.querySelectorAll('th[data-col]').forEach(th=>{
-  th.addEventListener('click',()=>{
-    const c=th.dataset.col;
-    if(sCol===c)sDir=sDir==='asc'?'desc':'asc';else{sCol=c;sDir='desc';}
-    document.querySelectorAll('th').forEach(h=>h.classList.remove('asc','desc'));
+document.querySelectorAll('th[data-col]').forEach(th => {
+  th.addEventListener('click', () => {
+    const c = th.dataset.col;
+    if (sCol === c) sDir = sDir === 'asc' ? 'desc' : 'asc'; else { sCol = c; sDir = 'desc'; }
+    document.querySelectorAll('th').forEach(h => h.classList.remove('asc', 'desc'));
     th.classList.add(sDir);
     render();
   });
 });
-document.getElementById('srch').addEventListener('input',e=>{q=e.target.value;render();});
+document.getElementById('srch').addEventListener('input', e => { q = e.target.value; render(); });
 document.querySelector('th[data-col="total_pnl"]').classList.add('desc');
 
-buildMetrics();buildCharts();buildFilters();render();
+// Load on start, then auto-refresh every 5 minutes
+loadData();
+setInterval(loadData, 5 * 60 * 1000);
 </script>
 </body>
 </html>
