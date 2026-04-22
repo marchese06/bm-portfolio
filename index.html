@@ -142,7 +142,7 @@
   <th data-col="unrealized">At Risk</th>
   <th data-col="total_pnl">Net P&L</th>
   <th data-col="pnl_pct">P&L %</th>
-  <th data-col="rem_pct">% Rem.</th>
+  <th data-col="contracts_rem">Contracts Rem.</th>
   <th data-col="theme">Theme</th>
   <th data-col="status">Status</th>
 </tr></thead>
@@ -431,14 +431,14 @@ function buildMetrics(){
   const n=ALL.length;
   const totR=ALL.reduce((s,t)=>s+t.realized,0);
   const totU=ALL.reduce((s,t)=>s+t.unrealized,0);
-  // Net P&L = sum of every row's Net P&L column across all active positions
+  // Net P&L = live recompute: realized + unrealized - cost for every position
   const totP=ALL.reduce((s,t)=>s+t.total_pnl,0);
   const dbl=ALL.filter(t=>t.stages.includes('2x')).length;
   const h3=ALL.filter(t=>t.stages.includes('3x')).length;
   const h4=ALL.filter(t=>t.stages.includes('4x')).length;
   const best=ALL.reduce((a,b)=>a.total_pnl>b.total_pnl?a:b,{total_pnl:-Infinity,ticker:'—'});
   document.getElementById('metrics').innerHTML=[
-    {l:'Booked P&L',v:dol(totP),c:totP>=0?'g':'r',s:`realized only · excl. open`},
+    {l:'Net P&L',v:dol(totP),c:totP>=0?'g':'r',s:`all ${ALL.length} active positions`},
     {l:'Amount at Risk',v:'$'+totU.toLocaleString(),c:'b',s:'current value of open positions'},
     {l:'Hit 2x+',v:dbl,c:'g',s:`${h3} hit 3x · ${h4} hit 4x`},
     {l:'Best trade',v:best.ticker,c:'o',s:dol(best.total_pnl)+' net P&L'},
@@ -509,7 +509,6 @@ function render(){
   tb.innerHTML=d.map(t=>{
     const badge=t.status==='1/2 Open'?`<span class="badge b-half">½ open</span>`:`<span class="badge b-open">open</span>`;
     const stHtml=t.stages.length?t.stages.map(s=>`<span class="stage s${s[0]}">${s}</span>`).join(''):'<span class="dim" style="font-size:11px">—</span>';
-    const remStr=t.rem_pct>0?`${t.rem_pct}%`:`<span class="dim">closed</span>`;
     
     // Current price display
     const currLoaded = priceCache[t.optionSymbol] !== undefined;
@@ -537,7 +536,7 @@ function render(){
       <td class="upnl">${t.unrealized>0?'$'+t.unrealized.toLocaleString():'—'}</td>
       <td class="pnl ${pC(t.total_pnl)}">${dol(t.total_pnl)}</td>
       <td class="mono ${pC(t.pnl_pct)}">${t.pnl_pct>0?'+':''}${t.pnl_pct}%</td>
-      <td class="mono dim">${remStr}</td>
+      <td class="mono dim">${t.rem_pct>0 ? Math.round(t.rem_pct/100*t.contracts)+' / '+t.contracts : '<span class=\"dim\">closed</span>'}</td>
       <td><div class="theme-cell"><span class="tdot" style="background:${tColor(t)}"></span>${t.theme||t.sector||'—'}</div></td>
       <td>${badge}</td>
     </tr>`;
