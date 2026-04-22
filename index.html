@@ -18,7 +18,6 @@
   body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14px;min-height:100vh;overflow-x:hidden;}
   body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,229,160,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,160,0.02) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0;}
   .wrap{max-width:1500px;margin:0 auto;padding:0 24px 60px;position:relative;z-index:1;}
-
   header{padding:28px 0 22px;border-bottom:1px solid var(--border);margin-bottom:22px;display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;}
   .logo h1{font-family:var(--mono);font-size:11px;font-weight:400;color:var(--green);letter-spacing:0.2em;text-transform:uppercase;margin-bottom:5px;}
   .logo h2{font-size:26px;font-weight:600;letter-spacing:-0.02em;}
@@ -27,7 +26,6 @@
   .live{display:inline-flex;align-items:center;gap:6px;background:rgba(0,229,160,0.1);border:1px solid rgba(0,229,160,0.25);border-radius:20px;padding:4px 12px;font-size:11px;font-family:var(--mono);color:var(--green);}
   .live-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s infinite;}
   @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.3;transform:scale(0.8)}}
-
   .metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:10px;margin-bottom:20px;}
   .mc{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:13px 15px;transition:border-color 0.2s;}
   .mc:hover{border-color:var(--border2);}
@@ -36,13 +34,12 @@
   .mc-val{font-family:var(--mono);font-size:22px;font-weight:700;line-height:1;}
   .mc-val.g{color:var(--green);}.mc-val.b{color:var(--blue);}.mc-val.r{color:var(--red);}.mc-val.o{color:var(--gold);}
   .mc-sub{font-size:12px;color:var(--text3);margin-top:4px;}
-
   .charts{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:20px;}
   @media(max-width:900px){.charts{grid-template-columns:1fr;}}
   .cc{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:15px 17px;}
   .cc-title{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:13px;}
   .br{display:flex;align-items:center;gap:8px;margin-bottom:7px;}
-  .br-label{width:110px;flex-shrink:0;font-size:12px;color:var(--text2);text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;}
+  .br-label{width:120px;flex-shrink:0;font-size:12px;color:var(--text2);text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;}
   .br-label:hover{color:var(--text);}
   .br-track{flex:1;background:var(--surface2);border-radius:3px;height:10px;overflow:hidden;}
   .br-fill{height:10px;border-radius:3px;}
@@ -54,22 +51,21 @@
   .perf-zero{position:absolute;left:50%;top:0;bottom:0;width:1px;background:rgba(255,255,255,0.1);}
   .perf-bar{position:absolute;height:7px;top:4px;border-radius:2px;}
   .perf-pct{font-family:var(--mono);font-size:11px;width:64px;flex-shrink:0;text-align:right;}
-
   .controls{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px;}
   .ctrl-label{font-family:var(--mono);font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.1em;}
   .fbtn{padding:4px 12px;border:1px solid var(--border);border-radius:20px;background:transparent;font-size:12px;font-family:var(--sans);color:var(--text2);cursor:pointer;transition:all 0.15s;}
   .fbtn:hover{border-color:var(--border2);color:var(--text);}
   .fbtn.on{background:rgba(0,229,160,0.12);border-color:rgba(0,229,160,0.4);color:var(--green);}
+  .refresh-btn{padding:5px 14px;border:1px solid rgba(0,229,160,0.3);border-radius:20px;background:rgba(0,229,160,0.08);font-size:12px;font-family:var(--mono);color:var(--green);cursor:pointer;transition:all 0.15s;}
+  .refresh-btn:hover{background:rgba(0,229,160,0.18);}
   .srch{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:5px 13px;font-family:var(--sans);font-size:13px;color:var(--text);outline:none;width:160px;transition:border-color 0.15s;margin-left:auto;}
   .srch::placeholder{color:rgba(255,255,255,0.18);}
   .srch:focus{border-color:var(--green);}
   .cnt{font-family:var(--mono);font-size:11px;color:var(--text3);}
-
-  .refresh-btn{padding:5px 14px;border:1px solid rgba(0,229,160,0.3);border-radius:20px;background:rgba(0,229,160,0.08);font-size:12px;font-family:var(--mono);color:var(--green);cursor:pointer;transition:all 0.15s;display:flex;align-items:center;gap:6px;}
-  .refresh-btn:hover{background:rgba(0,229,160,0.15);}
-  .spin{display:inline-block;animation:spin 1s linear infinite;}
-  @keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
-
+  .legend{display:flex;gap:16px;margin-bottom:10px;flex-wrap:wrap;align-items:center;}
+  .legend-item{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--text3);}
+  .legend-dot{width:8px;height:8px;border-radius:2px;}
+  .last-updated{font-family:var(--mono);font-size:10px;color:var(--text3);margin-left:auto;}
   .tbl-wrap{overflow-x:auto;background:var(--surface);border:1px solid var(--border);border-radius:12px;}
   table{width:100%;border-collapse:collapse;font-size:12.5px;}
   thead tr{border-bottom:1px solid var(--border);}
@@ -101,30 +97,19 @@
   .s2{background:rgba(0,229,160,0.12);color:var(--green);}
   .s3{background:rgba(91,140,255,0.12);color:var(--blue);}
   .s4{background:rgba(245,200,66,0.12);color:var(--gold);}
-  .empty{text-align:center;padding:48px;color:var(--text3);font-family:var(--mono);font-size:13px;}
-  .loading{text-align:center;padding:60px;color:var(--text3);font-family:var(--mono);font-size:13px;}
-  .loading-dot{display:inline-block;animation:pulse 1s infinite;}
-  .error-box{background:rgba(255,77,109,0.08);border:1px solid rgba(255,77,109,0.2);border-radius:8px;padding:16px 20px;margin-bottom:16px;font-family:var(--mono);font-size:12px;color:var(--red);}
-  .legend{display:flex;gap:16px;margin-bottom:10px;flex-wrap:wrap;align-items:center;}
-  .legend-item{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--text3);}
-  .legend-dot{width:8px;height:8px;border-radius:2px;}
-  .last-updated{font-family:var(--mono);font-size:10px;color:var(--text3);margin-left:auto;}
+  .empty,.loading{text-align:center;padding:48px;color:var(--text3);font-family:var(--mono);font-size:13px;}
+  .error-box{background:rgba(255,77,109,0.08);border:1px solid rgba(255,77,109,0.25);border-radius:8px;padding:14px 18px;margin-bottom:16px;font-family:var(--mono);font-size:12px;color:var(--red);}
   footer{margin-top:36px;padding-top:16px;border-top:1px solid var(--border);display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;}
   footer p{font-family:var(--mono);font-size:10px;color:rgba(255,255,255,0.18);letter-spacing:0.08em;}
   ::-webkit-scrollbar{width:4px;height:4px;}
   ::-webkit-scrollbar-track{background:var(--surface);}
   ::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.14);border-radius:2px;}
-  @media(max-width:700px){.logo h2{font-size:20px;}.mc-val{font-size:18px;}td,th{padding:7px 9px;}}
 </style>
 </head>
 <body>
 <div class="wrap">
-
 <header>
-  <div class="logo">
-    <h1>Breakout Multiplier</h1>
-    <h2>Active Portfolio Dashboard</h2>
-  </div>
+  <div class="logo"><h1>Breakout Multiplier</h1><h2>Active Portfolio Dashboard</h2></div>
   <div class="hdr-right">
     <div class="hdr-date" id="hdr-date">Loading...</div>
     <div class="live"><span class="live-dot"></span>LIVE</div>
@@ -132,14 +117,14 @@
 </header>
 
 <div id="error-area"></div>
-<div class="metrics" id="metrics"><div class="loading">Loading trades from Google Sheets<span class="loading-dot">...</span></div></div>
+<div class="metrics" id="metrics"><div class="loading">Fetching live data from Google Sheets...</div></div>
 <div class="charts" id="charts"></div>
 
 <div class="legend">
   <span class="legend-item"><span class="legend-dot" style="background:rgba(0,229,160,0.6)"></span>Sold 50% at 2x</span>
   <span class="legend-item"><span class="legend-dot" style="background:rgba(91,140,255,0.6)"></span>Sold 75% of rem. at 3x</span>
   <span class="legend-item"><span class="legend-dot" style="background:rgba(245,200,66,0.6)"></span>Sold rest at 4x</span>
-  <span class="legend-item" style="font-size:11px;">P&L assumes ~$1,000/position · Realized = locked · Unrealized = current open value</span>
+  <span class="legend-item" style="font-size:11px;">P&L assumes ~$1,000/position</span>
   <span class="last-updated" id="last-updated"></span>
 </div>
 
@@ -175,12 +160,18 @@
 </div>
 
 <footer>
-  <p>BREAKOUT MULTIPLIER · LIVE FROM GOOGLE SHEETS · ~$1,000 PER POSITION · STAGED EXIT MODEL</p>
+  <p>BREAKOUT MULTIPLIER · LIVE FROM GOOGLE SHEETS · ~$1,000/POSITION · STAGED EXIT MODEL</p>
   <p id="footer-date"></p>
 </footer>
 </div>
 
 <script>
+// ── CONFIG ──────────────────────────────────────────────────────────────────
+// Column order from your sheet (0-indexed):
+// 0=Ticker 1=Name 2=Sector 3=Industry 4=Theme 5=C/S Price
+// 6=Entry Date 7=Strike 8=Contract 9=Entry 10=Current 11=Max
+// 12=Curr% 13=Max% 14=Doubled 15=Days2x 16=Date2x 17=ATM 18=Status
+
 const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRnBssDB2zK9HpOp9kb0zYGWAjlhR-GWxSKpqag06rzDm9myu_rN_-wXmGhcFxVchwqXr-jatRToc2b/pub?gid=1943882608&single=true&output=csv';
 
 const TC = {
@@ -188,103 +179,140 @@ const TC = {
   'Semis':'#00e5a0','Short Semis':'#ff6b35','China':'#ff4d6d',
   'Biotech':'#f060b5','Space':'#00c9d4','Healthcare':'#68c44a',
   'Energy':'#f5c842','Coal':'#8a8fa8','Drones':'#00b89f',
-  'Software - Infrastructure':'#5b8cff','Software - Application':'#4a7be0',
-  'Communication Equipment':'#00c9d4','Semiconductors':'#00e5a0',
-  'Capital Markets':'#a56af5','Exchange Traded Fund':'#7f5be8',
-  'Auto Manufacturers':'#ff4d6d','Biotechnology':'#f060b5',
-  'Drug Manufacturers - General':'#68c44a','Oil & Gas E&P':'#f5c842',
-  'Thermal Coal':'#8a8fa8','Information Technology Services':'#5b8cff',
+  'Technology':'#5b8cff','Financial':'#7f5be8','Consumer Cyclical':'#ff4d6d',
 };
-
-function tcColor(theme, sector, industry) {
-  return TC[theme] || TC[sector] || TC[industry] || '#888';
-}
 
 let ALL_TRADES = [];
 let sCol = 'total_pnl', sDir = 'desc', filt = 'All', q = '';
 
-function parseCSV(text) {
-  const lines = text.trim().split('\n');
-  if (lines.length < 2) return [];
-  const headers = lines[0].split(',').map(h => h.replace(/^"|"$/g, '').trim());
-  const rows = [];
-  for (let i = 1; i < lines.length; i++) {
-    const vals = parseCSVLine(lines[i]);
-    if (vals.length < 5) continue;
-    const row = {};
-    headers.forEach((h, idx) => { row[h] = (vals[idx] || '').replace(/^"|"$/g, '').trim(); });
-    rows.push(row);
-  }
-  return rows;
-}
-
+// ── CSV PARSER ───────────────────────────────────────────────────────────────
 function parseCSVLine(line) {
   const result = [];
   let cur = '', inQ = false;
   for (let i = 0; i < line.length; i++) {
     const c = line[i];
     if (c === '"') { inQ = !inQ; }
-    else if (c === ',' && !inQ) { result.push(cur); cur = ''; }
+    else if (c === ',' && !inQ) { result.push(cur.trim()); cur = ''; }
     else { cur += c; }
   }
-  result.push(cur);
+  result.push(cur.trim());
   return result;
 }
 
-function parseMoney(s) {
+function cleanNum(s) {
   if (!s) return null;
-  const n = parseFloat(s.replace(/[$,%\s]/g, ''));
+  const n = parseFloat(String(s).replace(/[^0-9.\-]/g, ''));
   return isNaN(n) ? null : n;
 }
 
-function parsePct(s) {
+function cleanPct(s) {
   if (!s) return null;
-  const clean = s.replace(/[%\s]/g, '');
+  // handles "-96%" or "\\-96%" or "96%"
+  const clean = String(s).replace(/\\-/g, '-').replace(/[^0-9.\-]/g, '');
   const n = parseFloat(clean);
   return isNaN(n) ? null : n;
 }
 
-function mapRow(row) {
-  // Try to find the right column names — the sheet may have nested headers
-  const ticker = row['Stock/Ticker'] || row['Ticker'] || row['ticker'] || '';
-  const name = row['Stock/Name'] || row['Description/Name'] || row['Name'] || '';
-  const sector = row['Stock/Sector'] || row['Description/Sector'] || row['Sector'] || '';
-  const industry = row['Stock/Industry'] || row['Description/Industry'] || row['Industry'] || '';
-  const theme = row['Stock/Theme'] || row['Description/Theme'] || row['Theme'] || '';
-  const csPrice = parseMoney(row['Stock/C/S Price'] || row['Description/C/S Price'] || row['C/S Price'] || '');
-  const entryDate = row['Contract Info/Entry Date'] || row['Trade Info/Entry Date'] || row['Entry Date'] || '';
-  const strike = parseMoney(row['Contract Info/Option Strike'] || row['Trade Info/Option Strike'] || row['Option Strike'] || '');
-  const contract = row['Contract Info/Contract'] || row['Trade Info/Contract'] || row['Contract'] || '';
-  const entry = parseMoney(row['Contract Price/Entry'] || row['Contract Price/Entry '] || row['Entry'] || row['Entry '] || '');
-  const current = parseMoney(row['Contract Price/Current'] || row['Contract Price/Current '] || row['Current'] || row['Current '] || '');
-  const max = parseMoney(row['Contract Price/Max'] || row['Max'] || '');
-  const currPct = parsePct(row['Performance/Current %'] || row['Contract Price/Current %'] || row['Current %'] || '');
-  const maxPct = parsePct(row['Performance/Max %'] || row['Max %'] || '');
-  const status = row['Trade Status'] || row['Status'] || '';
+// ── DATA LOADING ─────────────────────────────────────────────────────────────
+async function loadData() {
+  document.getElementById('tbody').innerHTML = '<tr><td colspan="15"><div class="loading">Fetching live data from Google Sheets...</div></td></tr>';
+  document.getElementById('error-area').innerHTML = '';
 
-  // Only include rows that look like real open trades
-  if (!ticker || !entry || entry <= 0) return null;
-  if (!status || (!status.toLowerCase().includes('open') && status !== 'Open' && status !== '1/2 Open')) return null;
-  if (status.toLowerCase().includes('closed') || status.toLowerCase().includes('rolled')) return null;
+  try {
+    const res = await fetch(CSV_URL + '&cachebust=' + Date.now());
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const text = await res.text();
+    const lines = text.trim().split('\n');
 
-  return {
-    ticker,
-    name: name || ticker,
-    sector,
-    industry,
-    theme: theme || sector || industry,
-    entry_date: entryDate.trim(),
-    strike: strike || 0,
-    contract: contract.trim(),
-    entry: entry,
-    current: current || entry,
-    max: max || current || entry,
-    curr_pct: currPct !== null ? currPct : (current && entry ? Math.round((current/entry - 1)*100) : 0),
-    max_pct: maxPct !== null ? maxPct : 0,
-    status: status.includes('1/2') ? '1/2 Open' : 'Open',
-  };
+    // Row 1 = headers, find which row index has our real header
+    // The CSV published from the sheet will have the column names in row 0
+    const headers = parseCSVLine(lines[0]);
+
+    // Find column indices by name
+    const idx = {
+      ticker: headers.findIndex(h => h.includes('Ticker')),
+      name:   headers.findIndex(h => h.includes('Name')),
+      sector: headers.findIndex(h => h.includes('Sector')),
+      industry: headers.findIndex(h => h.includes('Industry')),
+      theme:  headers.findIndex(h => h.includes('Theme')),
+      entryDate: headers.findIndex(h => h.includes('Entry Date')),
+      strike: headers.findIndex(h => h.includes('Strike') || h.includes('Option Strike')),
+      contract: headers.findIndex(h => h.includes('Contract') && !h.includes('Price')),
+      entry:  headers.findIndex(h => h.includes('Entry') && h.includes('Price') || h === 'Contract Price/Entry'),
+      current: headers.findIndex(h => h.includes('Current') && h.includes('Price') || h === 'Contract Price/Current'),
+      max:    headers.findIndex(h => h.includes('Max') && !h.includes('%')),
+      currPct: headers.findIndex(h => h.includes('Current %') || h.includes('Current%')),
+      maxPct: headers.findIndex(h => h.includes('Max %') || h.includes('Max%')),
+      status: headers.findIndex(h => h.includes('Trade Status') || h === 'Status'),
+    };
+
+    // Fallback: use fixed positions we know from the sheet structure
+    // 0=Ticker,1=Name,2=Sector,3=Industry,4=Theme,5=CS,6=EntryDate,7=Strike,8=Contract,9=Entry,10=Current,11=Max,12=Curr%,13=Max%,...,18=Status
+    const trades = [];
+    for (let i = 1; i < lines.length; i++) {
+      const cols = parseCSVLine(lines[i]);
+      if (cols.length < 15) continue;
+
+      // Use detected indices or fallback to known positions
+      const ticker  = cols[idx.ticker  >= 0 ? idx.ticker  : 0] || '';
+      const name    = cols[idx.name    >= 0 ? idx.name    : 1] || '';
+      const sector  = cols[idx.sector  >= 0 ? idx.sector  : 2] || '';
+      const industry= cols[idx.industry>= 0 ? idx.industry: 3] || '';
+      const theme   = cols[idx.theme   >= 0 ? idx.theme   : 4] || '';
+      const entryDate = cols[idx.entryDate >= 0 ? idx.entryDate : 6] || '';
+      const strike  = cleanNum(cols[idx.strike   >= 0 ? idx.strike   : 7]);
+      const contract= cols[idx.contract >= 0 ? idx.contract : 8] || '';
+      const entry   = cleanNum(cols[idx.entry    >= 0 ? idx.entry    : 9]);
+      const current = cleanNum(cols[idx.current  >= 0 ? idx.current  : 10]);
+      const max     = cleanNum(cols[idx.max      >= 0 ? idx.max      : 11]);
+      const currPct = cleanPct(cols[idx.currPct  >= 0 ? idx.currPct  : 12]);
+      const maxPct  = cleanPct(cols[idx.maxPct   >= 0 ? idx.maxPct   : 13]);
+      // Status is last column — try detected, fallback to col 18, then last non-empty col
+      let status = cols[idx.status >= 0 ? idx.status : 18] || cols[cols.length - 1] || '';
+      status = status.trim();
+
+      // Filter: must be a real trade row (has ticker and valid entry price)
+      if (!ticker || ticker.length > 6 || !entry || entry <= 0) continue;
+      // Only open trades
+      if (!status.toLowerCase().includes('open')) continue;
+      // Deduplicate — skip rows where contract field looks like a price (duplicate section)
+      if (contract && /^\d+\.\d+$/.test(contract)) continue;
+
+      trades.push({
+        ticker, name: name || ticker, sector, industry,
+        theme: theme || sector,
+        entry_date: entryDate,
+        strike: strike || 0,
+        contract,
+        entry, current: current || entry,
+        max: max || current || entry,
+        curr_pct: currPct !== null ? currPct : Math.round((( (current||entry) / entry) - 1) * 100),
+        max_pct: maxPct !== null ? maxPct : 0,
+        status: status.includes('1/2') ? '1/2 Open' : 'Open',
+      });
+    }
+
+    if (trades.length === 0) throw new Error('No open trades found. Make sure the Master Table tab is selected when publishing.');
+
+    ALL_TRADES = trades.map(t => ({ ...t, ...calcPnl(t) }));
+
+    const now = new Date();
+    const dateStr = now.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }).toUpperCase();
+    const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+    document.getElementById('hdr-date').textContent = dateStr;
+    document.getElementById('last-updated').textContent = 'Updated ' + timeStr;
+    document.getElementById('footer-date').textContent = 'LAST FETCHED ' + dateStr + ' · ' + timeStr;
+
+    buildMetrics(); buildCharts(); buildFilters(); render();
+
+  } catch (err) {
+    document.getElementById('error-area').innerHTML = `<div class="error-box">⚠ Failed to load: ${err.message}<br><small>Check the sheet is published: File → Share → Publish to web → select the correct tab → CSV</small></div>`;
+    document.getElementById('metrics').innerHTML = '';
+    document.getElementById('tbody').innerHTML = '<tr><td colspan="15"><div class="empty">Could not load data.</div></td></tr>';
+  }
 }
 
+// ── P&L CALCULATION ──────────────────────────────────────────────────────────
 function calcPnl(t) {
   const start = 1000;
   const mult = t.max / t.entry;
@@ -300,156 +328,116 @@ function calcPnl(t) {
     }
   }
   const unrealized = remUnits * (t.current / t.entry) * start;
-  const totalPnl = realized + unrealized - start;
   return {
     realized: Math.round(realized),
     unrealized: Math.round(unrealized),
-    total_pnl: Math.round(totalPnl),
+    total_pnl: Math.round(realized + unrealized - start),
     rem_pct: Math.round(remUnits * 100),
     stages,
   };
 }
 
-async function loadData() {
-  document.getElementById('tbody').innerHTML = '<tr><td colspan="15"><div class="loading">Fetching live data from Google Sheets...</div></td></tr>';
-  document.getElementById('error-area').innerHTML = '';
-
-  try {
-    const res = await fetch(CSV_URL + '&t=' + Date.now());
-    if (!res.ok) throw new Error('Could not fetch sheet — status ' + res.status);
-    const text = await res.text();
-    const rows = parseCSV(text);
-    const mapped = rows.map(mapRow).filter(Boolean);
-
-    if (mapped.length === 0) {
-      throw new Error('No open trades found in sheet. Check the tab is published correctly.');
-    }
-
-    ALL_TRADES = mapped.map(t => ({ ...t, ...calcPnl(t) }));
-
-    const now = new Date();
-    const dateStr = now.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-    const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-    document.getElementById('hdr-date').textContent = dateStr.toUpperCase();
-    document.getElementById('last-updated').textContent = 'Updated ' + timeStr;
-    document.getElementById('footer-date').textContent = 'LAST FETCHED ' + dateStr.toUpperCase() + ' · ' + timeStr;
-
-    buildMetrics();
-    buildCharts();
-    buildFilters();
-    render();
-
-  } catch (err) {
-    document.getElementById('error-area').innerHTML = `<div class="error-box">⚠ ${err.message}</div>`;
-    document.getElementById('tbody').innerHTML = '<tr><td colspan="15"><div class="empty">Could not load data. Check the sheet is published to web.</div></td></tr>';
-    document.getElementById('metrics').innerHTML = '';
-  }
-}
-
-const pC = v => v > 0 ? 'pos' : v < 0 ? 'neg' : 'dim';
-const pS = v => (v > 0 ? '+' : '') + v + '%';
+// ── UI HELPERS ───────────────────────────────────────────────────────────────
+const pC  = v => v > 0 ? 'pos' : v < 0 ? 'neg' : 'dim';
+const pS  = v => (v > 0 ? '+' : '') + v + '%';
 const dol = v => (v >= 0 ? '+$' : '-$') + Math.abs(v).toLocaleString();
+const themeColor = t => TC[t.theme] || TC[t.sector] || '#888';
 
 function buildMetrics() {
   const n = ALL_TRADES.length;
-  const totReal = ALL_TRADES.reduce((s, t) => s + t.realized, 0);
+  const totReal  = ALL_TRADES.reduce((s, t) => s + t.realized, 0);
   const totUnreal = ALL_TRADES.reduce((s, t) => s + t.unrealized, 0);
-  const totPnl = ALL_TRADES.reduce((s, t) => s + t.total_pnl, 0);
+  const totPnl   = ALL_TRADES.reduce((s, t) => s + t.total_pnl, 0);
   const deployed = n * 1000;
-  const dbl = ALL_TRADES.filter(t => t.stages.includes('2x')).length;
+  const dbl  = ALL_TRADES.filter(t => t.stages.includes('2x')).length;
   const hit3 = ALL_TRADES.filter(t => t.stages.includes('3x')).length;
   const hit4 = ALL_TRADES.filter(t => t.stages.includes('4x')).length;
   const best = ALL_TRADES.reduce((a, b) => a.total_pnl > b.total_pnl ? a : b);
-
   document.getElementById('metrics').innerHTML = [
-    { l: 'Net P&L', v: dol(totPnl), c: totPnl >= 0 ? 'g' : 'r', s: `on $${n}k deployed (${(totPnl/deployed*100).toFixed(1)}%)` },
-    { l: 'Realized', v: '+$' + totReal.toLocaleString(), c: 'g', s: 'locked profits off table' },
-    { l: 'Unrealized', v: '$' + totUnreal.toLocaleString(), c: 'b', s: 'current open value' },
-    { l: 'Hit 2x+', v: dbl, c: 'g', s: `${hit3} hit 3x · ${hit4} hit 4x` },
-    { l: 'Best trade', v: best.ticker, c: 'o', s: dol(best.total_pnl) + ' net P&L' },
-    { l: 'Positions', v: n, c: '', s: 'active · live from sheet' },
-  ].map(m => `<div class="mc ${m.c === 'o' ? 'hi' : ''}"><div class="mc-label">${m.l}</div><div class="mc-val ${m.c}">${m.v}</div><div class="mc-sub">${m.s}</div></div>`).join('');
+    { l:'Net P&L',          v:dol(totPnl),                      c:totPnl>=0?'g':'r', s:`on $${n}k deployed (${(totPnl/deployed*100).toFixed(1)}%)` },
+    { l:'Realized',         v:'+$'+totReal.toLocaleString(),     c:'g', s:'locked profits off table' },
+    { l:'Unrealized',       v:'$'+totUnreal.toLocaleString(),    c:'b', s:'current open value' },
+    { l:'Hit 2x+',          v:dbl,                               c:'g', s:`${hit3} hit 3x · ${hit4} hit 4x` },
+    { l:'Best trade',       v:best.ticker,                       c:'o', s:dol(best.total_pnl)+' net P&L' },
+    { l:'Positions',        v:n,                                 c:'',  s:'active · live from sheet' },
+  ].map(m => `<div class="mc ${m.c==='o'?'hi':''}"><div class="mc-label">${m.l}</div><div class="mc-val ${m.c}">${m.v}</div><div class="mc-sub">${m.s}</div></div>`).join('');
 }
 
 function buildCharts() {
   const tm = {}, sm = {};
   ALL_TRADES.forEach(t => {
-    const th = t.theme || t.sector || 'Other';
-    tm[th] = (tm[th] || 0) + 1;
-    sm[t.sector || 'Other'] = (sm[t.sector || 'Other'] || 0) + 1;
+    tm[t.theme||t.sector||'Other'] = (tm[t.theme||t.sector||'Other']||0)+1;
+    sm[t.sector||'Other'] = (sm[t.sector||'Other']||0)+1;
   });
-  const themes = Object.entries(tm).sort((a, b) => b[1] - a[1]).slice(0, 10);
-  const sectors = Object.entries(sm).sort((a, b) => b[1] - a[1]);
-  const tMax = themes[0][1], sMax = sectors[0][1];
-  const sorted = [...ALL_TRADES].sort((a, b) => b.total_pnl - a.total_pnl);
-  const perf = [...sorted.slice(0, 5), ...sorted.slice(-3)];
-  const pMax = Math.max(...perf.map(t => Math.abs(t.total_pnl))) || 1;
+  const themes  = Object.entries(tm).sort((a,b)=>b[1]-a[1]).slice(0,10);
+  const sectors = Object.entries(sm).sort((a,b)=>b[1]-a[1]);
+  const tMax = themes[0]?.[1]||1, sMax = sectors[0]?.[1]||1;
+  const sorted = [...ALL_TRADES].sort((a,b)=>b.total_pnl-a.total_pnl);
+  const perf = [...sorted.slice(0,5), ...sorted.slice(-3)];
+  const pMax = Math.max(...perf.map(t=>Math.abs(t.total_pnl)))||1;
 
   document.getElementById('charts').innerHTML = `
     <div class="cc"><div class="cc-title">By theme</div>
-      ${themes.map(([th, c]) => `<div class="br"><div class="br-label" onclick="setF('${th}')">${th}</div><div class="br-track"><div class="br-fill" style="width:${Math.round(c/tMax*100)}%;background:${tcColor(th,'','')}"></div></div><div class="br-cnt">${c}</div></div>`).join('')}
+      ${themes.map(([th,c])=>`<div class="br"><div class="br-label" onclick="setF('${th}')">${th}</div><div class="br-track"><div class="br-fill" style="width:${Math.round(c/tMax*100)}%;background:${TC[th]||'#888'}"></div></div><div class="br-cnt">${c}</div></div>`).join('')}
     </div>
     <div class="cc"><div class="cc-title">By sector</div>
-      ${sectors.map(([s, c]) => `<div class="br"><div class="br-label">${s}</div><div class="br-track"><div class="br-fill" style="width:${Math.round(c/sMax*100)}%;background:#5b8cff"></div></div><div class="br-cnt">${c}</div></div>`).join('')}
+      ${sectors.map(([s,c])=>`<div class="br"><div class="br-label">${s}</div><div class="br-track"><div class="br-fill" style="width:${Math.round(c/sMax*100)}%;background:#5b8cff"></div></div><div class="br-cnt">${c}</div></div>`).join('')}
     </div>
     <div class="cc"><div class="cc-title">Net P&L per position (~$1k)</div>
-      ${perf.map(t => {
-        const p = t.total_pnl, f = Math.abs(p) / pMax;
-        const col = p > 0 ? '#00e5a0' : '#ff4d6d';
-        const left = p >= 0 ? 50 : 50 - f * 47, w = f * 47;
-        return `<div class="perf-row" onclick="setF('${t.theme || t.sector}')">
-          <div class="perf-tick" style="color:${tcColor(t.theme,t.sector,t.industry)}">${t.ticker}</div>
+      ${perf.map(t=>{
+        const p=t.total_pnl, f=Math.abs(p)/pMax;
+        const col=p>0?'#00e5a0':'#ff4d6d';
+        const left=p>=0?50:50-f*47, w=f*47;
+        return `<div class="perf-row" onclick="setF('${t.theme||t.sector}')">
+          <div class="perf-tick" style="color:${themeColor(t)}">${t.ticker}</div>
           <div class="perf-wrap"><div class="perf-zero"></div><div class="perf-bar" style="left:${left}%;width:${w}%;background:${col}"></div></div>
-          <div class="perf-pct ${p > 0 ? 'pos' : 'neg'}">${p >= 0 ? '+$' : '-$'}${Math.abs(p).toLocaleString()}</div>
+          <div class="perf-pct ${p>0?'pos':'neg'}">${p>=0?'+$':'-$'}${Math.abs(p).toLocaleString()}</div>
         </div>`;
       }).join('')}
     </div>`;
 }
 
 function buildFilters() {
-  const themes = [...new Set(ALL_TRADES.map(t => t.theme || t.sector).filter(Boolean))];
-  const fs = ['All', 'Winners', 'Losers', 'Hit 2x', 'Hit 3x+', 'Hit 4x', '1/2 Open', 'Full Open', ...themes];
+  const themes = [...new Set(ALL_TRADES.map(t=>t.theme||t.sector).filter(Boolean))];
+  const fs = ['All','Winners','Losers','Hit 2x','Hit 3x+','Hit 4x','1/2 Open','Full Open',...themes];
   document.getElementById('filters').innerHTML = fs.map(f =>
-    `<button class="fbtn ${f === filt ? 'on' : ''}" onclick="setF('${f}')">${f}</button>`
+    `<button class="fbtn ${f===filt?'on':''}" onclick="setF('${f}')">${f}</button>`
   ).join('');
 }
-
-function setF(f) { filt = f; buildFilters(); render(); }
+function setF(f) { filt=f; buildFilters(); render(); }
 
 function getData() {
   let d = [...ALL_TRADES];
-  if (filt === 'Winners') d = d.filter(t => t.total_pnl > 0);
-  else if (filt === 'Losers') d = d.filter(t => t.total_pnl < 0);
-  else if (filt === 'Hit 2x') d = d.filter(t => t.stages.includes('2x'));
-  else if (filt === 'Hit 3x+') d = d.filter(t => t.stages.includes('3x'));
-  else if (filt === 'Hit 4x') d = d.filter(t => t.stages.includes('4x'));
-  else if (filt === '1/2 Open') d = d.filter(t => t.status === '1/2 Open');
-  else if (filt === 'Full Open') d = d.filter(t => t.status === 'Open');
-  else if (filt !== 'All') d = d.filter(t => (t.theme || t.sector) === filt);
+  if      (filt==='Winners')  d=d.filter(t=>t.total_pnl>0);
+  else if (filt==='Losers')   d=d.filter(t=>t.total_pnl<0);
+  else if (filt==='Hit 2x')   d=d.filter(t=>t.stages.includes('2x'));
+  else if (filt==='Hit 3x+')  d=d.filter(t=>t.stages.includes('3x'));
+  else if (filt==='Hit 4x')   d=d.filter(t=>t.stages.includes('4x'));
+  else if (filt==='1/2 Open') d=d.filter(t=>t.status==='1/2 Open');
+  else if (filt==='Full Open')d=d.filter(t=>t.status==='Open');
+  else if (filt!=='All')      d=d.filter(t=>(t.theme||t.sector)===filt);
   if (q) {
-    const ql = q.toLowerCase();
-    d = d.filter(t => t.ticker.toLowerCase().includes(ql) || t.name.toLowerCase().includes(ql) || (t.theme || '').toLowerCase().includes(ql) || t.contract.toLowerCase().includes(ql));
+    const ql=q.toLowerCase();
+    d=d.filter(t=>t.ticker.toLowerCase().includes(ql)||t.name.toLowerCase().includes(ql)||(t.theme||'').toLowerCase().includes(ql)||t.contract.toLowerCase().includes(ql));
   }
-  d.sort((a, b) => {
-    let va = a[sCol], vb = b[sCol];
-    if (typeof va === 'string') { va = va.toLowerCase(); vb = vb.toLowerCase(); }
-    if (va === null || va === undefined) va = -Infinity;
-    if (vb === null || vb === undefined) vb = -Infinity;
-    return sDir === 'asc' ? (va < vb ? -1 : va > vb ? 1 : 0) : (va > vb ? -1 : va < vb ? 1 : 0);
+  d.sort((a,b)=>{
+    let va=a[sCol], vb=b[sCol];
+    if (typeof va==='string'){va=va.toLowerCase();vb=vb.toLowerCase();}
+    if (va==null) va=-Infinity; if (vb==null) vb=-Infinity;
+    return sDir==='asc'?(va<vb?-1:va>vb?1:0):(va>vb?-1:va<vb?1:0);
   });
   return d;
 }
 
 function render() {
   const d = getData();
-  document.getElementById('cnt').textContent = d.length + ' of ' + ALL_TRADES.length + ' positions';
+  document.getElementById('cnt').textContent = d.length+' of '+ALL_TRADES.length+' positions';
   const tb = document.getElementById('tbody');
-  if (!d.length) { tb.innerHTML = `<tr><td colspan="15"><div class="empty">No positions match</div></td></tr>`; return; }
+  if (!d.length){tb.innerHTML=`<tr><td colspan="15"><div class="empty">No positions match</div></td></tr>`;return;}
   tb.innerHTML = d.map(t => {
-    const badge = t.status === '1/2 Open' ? `<span class="badge b-half">½ open</span>` : `<span class="badge b-open">open</span>`;
-    const stHtml = t.stages.length ? t.stages.map(s => `<span class="stage s${s[0]}">${s}</span>`).join('') : '<span style="color:var(--text3);font-size:11px;">—</span>';
-    const remStr = t.rem_pct > 0 ? `${t.rem_pct}%` : `<span style="color:var(--text3)">closed</span>`;
-    const color = tcColor(t.theme, t.sector, t.industry);
+    const badge = t.status==='1/2 Open'?`<span class="badge b-half">½ open</span>`:`<span class="badge b-open">open</span>`;
+    const stHtml = t.stages.length ? t.stages.map(s=>`<span class="stage s${s[0]}">${s}</span>`).join('') : '<span style="color:var(--text3);font-size:11px">—</span>';
+    const remStr = t.rem_pct>0?`${t.rem_pct}%`:`<span style="color:var(--text3)">closed</span>`;
     return `<tr>
       <td class="tc">${t.ticker}</td>
       <td class="nc" title="${t.name}">${t.name}</td>
@@ -460,11 +448,11 @@ function render() {
       <td class="mono ${pC(t.curr_pct)}">${pS(t.curr_pct)}</td>
       <td class="mono dim">${pS(t.max_pct)}</td>
       <td><div class="stages">${stHtml}</div></td>
-      <td class="rpnl">${t.realized > 0 ? '+$' + t.realized.toLocaleString() : '—'}</td>
+      <td class="rpnl">${t.realized>0?'+$'+t.realized.toLocaleString():'—'}</td>
       <td class="upnl">$${t.unrealized.toLocaleString()}</td>
       <td class="pnl ${pC(t.total_pnl)}">${dol(t.total_pnl)}</td>
       <td class="mono dim">${remStr}</td>
-      <td><div class="theme-cell"><span class="tdot" style="background:${color}"></span>${t.theme || t.sector || '—'}</div></td>
+      <td><div class="theme-cell"><span class="tdot" style="background:${themeColor(t)}"></span>${t.theme||t.sector||'—'}</div></td>
       <td>${badge}</td>
     </tr>`;
   }).join('');
@@ -472,17 +460,17 @@ function render() {
 
 document.querySelectorAll('th[data-col]').forEach(th => {
   th.addEventListener('click', () => {
-    const c = th.dataset.col;
-    if (sCol === c) sDir = sDir === 'asc' ? 'desc' : 'asc'; else { sCol = c; sDir = 'desc'; }
-    document.querySelectorAll('th').forEach(h => h.classList.remove('asc', 'desc'));
+    const c=th.dataset.col;
+    if(sCol===c) sDir=sDir==='asc'?'desc':'asc'; else{sCol=c;sDir='desc';}
+    document.querySelectorAll('th').forEach(h=>h.classList.remove('asc','desc'));
     th.classList.add(sDir);
     render();
   });
 });
-document.getElementById('srch').addEventListener('input', e => { q = e.target.value; render(); });
+document.getElementById('srch').addEventListener('input', e=>{q=e.target.value;render();});
 document.querySelector('th[data-col="total_pnl"]').classList.add('desc');
 
-// Load on start, then auto-refresh every 5 minutes
+// Load on start, auto-refresh every 5 minutes
 loadData();
 setInterval(loadData, 5 * 60 * 1000);
 </script>
