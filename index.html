@@ -227,8 +227,10 @@
 
 <script>
 // ── URLs ──────────────────────────────────────────────────────────────────────
-const OPEN_CSV   = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRnBssDB2zK9HpOp9kb0zYGWAjlhR-GWxSKpqag06rzDm9myu_rN_-wXmGhcFxVchwqXr-jatRToc2b/pub?gid=975618056&single=true&output=csv';
-const CLOSED_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRnBssDB2zK9HpOp9kb0zYGWAjlhR-GWxSKpqag06rzDm9myu_rN_-wXmGhcFxVchwqXr-jatRToc2b/pub?gid=917280819&single=true&output=csv';
+// Single standardized tab — same columns for open and closed trades
+const DATA_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRnBssDB2zK9HpOp9kb0zYGWAjlhR-GWxSKpqag06rzDm9myu_rN_-wXmGhcFxVchwqXr-jatRToc2b/pub?gid=1288747133&single=true&output=csv';
+const OPEN_CSV = DATA_CSV;
+const CLOSED_CSV = DATA_CSV;
 
 const TC = {
   'Software':'#5b8cff','Crypto/Data Center':'#7f5be8','Crypto':'#a56af5',
@@ -272,16 +274,28 @@ const tColor=t=>TC[t.theme]||TC[t.sector]||'#888';
 
 // ── Option symbol ─────────────────────────────────────────────────────────────
 const MONTHS={jan:1,feb:2,mar:3,apr:4,may:5,jun:6,jul:7,aug:8,sep:9,oct:10,nov:11,dec:12};
-function buildSymbol(ticker,contract,entryDate,strike,cpFlag){
+function buildSymbol(ticker,contract,expiration,entryDate,strike,cpFlag){
+  // expiration is the actual expiry date string e.g. "05/15/2026"
+  // contract is e.g. "May 15th Call"
   try{
-    const p=contract.toLowerCase().replace(/[^a-z0-9 ]/g,'').trim().split(/\s+/);
-    const mo=MONTHS[p[0].slice(0,3)], dy=parseInt(p[1]);
-    // Use explicit C/P flag if provided, else parse from contract name
-    const cp=cpFlag?(cpFlag.toUpperCase().startsWith('P')?'P':'C'):p[p.length-1].startsWith('p')?'P':'C';
-    if(!mo||!dy||isNaN(dy)) return null;
-    const ey=entryDate?parseInt(entryDate.split('/')[2]):new Date().getFullYear();
-    let yr=ey;
-    if(new Date(yr,mo-1,dy)<new Date()) yr++;
+    let yr, mo, dy;
+    // Try parsing expiration date directly first (most reliable)
+    if(expiration && expiration.match(/\d{1,2}\/\d{1,2}\/\d{4}/)){
+      const parts=expiration.split('/');
+      mo=parseInt(parts[0]); dy=parseInt(parts[1]); yr=parseInt(parts[2]);
+    } else {
+      // Fall back to parsing contract name
+      const p=contract.toLowerCase().replace(/[^a-z0-9 ]/g,'').trim().split(/\s+/);
+      mo=MONTHS[p[0].slice(0,3)]; dy=parseInt(p[1]);
+      // Determine year from entry date or current year
+      const ey=entryDate?parseInt(entryDate.split('/')[2]):new Date().getFullYear();
+      yr=ey;
+      if(new Date(yr,mo-1,dy)<new Date()) yr++;
+    }
+    if(!mo||!dy||isNaN(dy)||!yr) return null;
+    // C/P from explicit flag, or parse from contract
+    const p2=contract.toLowerCase();
+    const cp=cpFlag?(cpFlag.toUpperCase().startsWith('P')?'P':'C'):p2.includes('put')?'P':'C';
     const stk=String(Math.round(strike*1000)).padStart(8,'0');
     return `${ticker}${String(yr).slice(2)}${String(mo).padStart(2,'0')}${String(dy).padStart(2,'0')}${cp}${stk}`;
   }catch(e){return null;}
@@ -387,53 +401,43 @@ async function fetchAllPrices(trades){
 
 // ── Parse OPEN CSV ────────────────────────────────────────────────────────────
 function parseOpen(text){
+  // Column layout (same for all rows in standardized tab):
+  // [0]=X/O, [3]=Ticker, [4]=Name, [5]=Sector, [6]=Industry, [7]=Theme
+  // [9]=EntryDate, [11]=Expiration, [12]=Contract, [13]=Strike, [14]=C/P
+  // [15]=Entry$, [16]=Current$, [17]=Max$, [18]=Curr%, [19]=Max%, [21]=Doubled
+  // [23]=DateDoubled, [25]=Status
   const trades=[];
   for(const line of text.split('\n')){
     const c=parseLine(line);
-    if(c.length<10) continue;
-    // Rows start with O (open) marker at index 0
+    if(c.length<16) continue;
     const marker=(c[0]||'').trim().toUpperCase();
-    if(marker!=='O') continue;
-
-    // Newer format: O | NOTES/CONTRACT_VALUE | Ticker | Name | Sector | Industry | Theme | C/S Price | EntryDate | EmailTime | Expiration | Strike | C/P | Contract | Entry$ | Current$ | Max$ | Curr% | Max% | ... | Status
-    let ticker=(c[2]||'').trim();
+    if(marker!=='O') continue;                        // only O rows are active
+    const ticker=(c[3]||'').trim();
     if(!ticker||!/^[A-Z]{1,6}$/.test(ticker)) continue;
-    if(['TICKER','STOCK','SECTOR','X','O','YES','NO'].includes(ticker)) continue;
-
-    const entry=num(c[14]);
-    if(!entry||entry<=0) continue;
-    const current_val=num(c[15]);
-    const max_val=num(c[16]);
+    const entry=num(c[15]); if(!entry||entry<=0) continue;
+    const current_val=num(c[16]);
+    const max_val=num(c[17]);
     const max=max_val||current_val||entry;
-
-    // Status is typically last meaningful column — find it
-    let status='Open';
-    for(let i=c.length-1;i>=20;i--){
-      const v=(c[i]||'').trim();
-      if(['Open','1/2 Open','Closed','Rolled'].some(s=>v.includes(s))){status=v;break;}
-    }
-
-    const entry_date=(c[8]||'').trim();
-    const expiration=(c[10]||'').trim();
-    const strike=num(c[11])||0;
-    const cp=(c[12]||'').trim();
-    const contract=(c[13]||'').trim();
-    const optionSymbol=buildSymbol(ticker,expiration,entry_date,strike,cp);
-
+    const status=((c[25]||'').trim()||'Open');
+    const expiration=(c[11]||'').trim();
+    const contract=(c[12]||'').trim();
+    const strike=num(c[13])||0;
+    const cp=(c[14]||'').trim();
+    const optionSymbol=buildSymbol(ticker,contract,expiration,(c[9]||'').trim(),strike,cp);
     const t={
       ticker,
-      name:(c[3]||ticker).trim(),
-      sector:(c[4]||'').trim(),
-      industry:(c[5]||'').trim(),
-      theme:(c[6]||'').trim(),
-      entry_date,
+      name:(c[4]||ticker).trim(),
+      sector:(c[5]||'').trim(),
+      industry:(c[6]||'').trim(),
+      theme:(c[7]||'').trim(),
+      entry_date:(c[9]||'').trim(),
       contract,
       strike,
       entry,
       current:current_val||max||entry,
       max,
-      curr_pct:pct(c[17])||0,
-      max_pct:pct(c[18])||0,
+      curr_pct:pct(c[18])||0,
+      max_pct:pct(c[19])||0,
       status:status.includes('1/2')?'1/2 Open':'Open',
       optionSymbol,
     };
@@ -443,83 +447,47 @@ function parseOpen(text){
   return trades;
 }
 
-// ── Parse CLOSED CSV ──────────────────────────────────────────────────────────
-// The CLOSED TRADES tab has multiple section layouts. We auto-detect by finding
-// the ticker position and inferring entry$/max$ from there.
-// Layout A (older): Entry | Ticker | Strike | Contract | Entry$ | Max$ | Max% | Doubled | Days | Date2x | CloseDate | ClosePrice | Status
-//   ticker=1, entry=4, max=5, closeDate=10, closePrice=11
-// Layout B (master sheet style): X/O | NOTES | Ticker | Name | Sector | Industry | Theme | Price | EntryDate | Time | Expiry | Contract | Strike | C/P | Entry$ | Current$ | Max$ | ...
-//   ticker=2 or 3, entry=14+, max=16+
-
+// ── Parse CLOSED CSV ─────────────────────────────────────────────────────────
+// Same standardized tab — X rows with status Closed/Rolled are closed trades.
 function parseClosed(text){
   const trades=[];
   for(const line of text.split('\n')){
     const c=parseLine(line);
-    if(c.length<5) continue;
-
-    // Skip pure header rows
-    const first=(c[0]||'').trim();
-    if(['SPEAKER NOTES','Entry','Ticker','Stock/Ticker','NO_HEADER','X','O','BOX Blog'].includes(first)) continue;
-
-    let ticker='', entry=null, max=null, close_date='', close_price=null;
-    let name='', sector='', industry='', theme='', entry_date='', contract='', strike=0;
-
-    // ── Layout A: Entry date | Ticker | Strike | Contract | Entry$ | Max$ | Max% | Doubled | Days | Date2x | CloseDate | ClosePrice
-    // Signature: c[1] looks like a ticker AND c[4] is a number AND c[10] is a date
-    const maybeTickerA=(c[1]||'').trim();
-    const maybeEntryA=num(c[4]);
-    const maybeDateA=(c[10]||'').trim();
-    if(maybeTickerA&&/^[A-Z]{1,6}$/.test(maybeTickerA)&&maybeEntryA&&maybeEntryA>0&&maybeDateA.match(/\d{1,2}\/\d{1,2}\/\d{2,4}/)){
-      ticker=maybeTickerA;
-      entry_date=(c[0]||'').trim();
-      strike=num(c[2])||0;
-      contract=(c[3]||'').trim();
-      entry=maybeEntryA;
-      max=num(c[5])||entry;
-      close_date=maybeDateA;
-      close_price=num(c[11])||null;
-    }
-
-    // ── Layout B: master sheet style, ticker at index 2 or 3
-    if(!ticker){
-      let tIdx=2;
-      let t=(c[2]||'').trim();
-      if(!t||t.length>7||!/^[A-Z]/.test(t)){t=(c[3]||'').trim();tIdx=3;}
-      if(t&&/^[A-Z]{1,6}$/.test(t)&&!['TICKER','STOCK','SECTOR','X','O','YES','NO','Entry','NAME'].includes(t)){
-        const off=tIdx-2;
-        const e=num(c[14+off]);
-        if(e&&e>0){
-          ticker=t;
-          name=(c[3+off]||t).trim();
-          sector=(c[4+off]||'').trim();
-          industry=(c[5+off]||'').trim();
-          theme=(c[6+off]||'').trim();
-          entry_date=(c[8+off]||'').trim();
-          contract=(c[11+off]||'').trim();
-          strike=num(c[12+off])||0;
-          entry=e;
-          const cv=num(c[15+off]);
-          const mv=num(c[16+off]);
-          max=mv||cv||entry;
-          // Find close date from index 20+ (date doubled or close date)
-          for(let i=20+off;i<Math.min(c.length,28);i++){
-            const v=(c[i]||'').trim();
-            if(v.match(/^\d{1,2}\/\d{1,2}\/\d{2,4}$/)){close_date=v;break;}
-          }
-        }
-      }
-    }
-
-    if(!ticker||!entry||entry<=0) continue;
-    if(['TICKER','STOCK','Entry','YES','NO','Closed','Open'].includes(ticker)) continue;
-
-    const t={ticker,name:name||ticker,sector,industry,theme,entry_date,contract,strike,entry,current:close_price||max||entry,max,close_date,close_price};
+    if(c.length<16) continue;
+    const marker=(c[0]||'').trim().toUpperCase();
+    if(marker!=='X' && marker!=='x') continue;        // only X rows are closed
+    const ticker=(c[3]||'').trim();
+    if(!ticker||!/^[A-Z]{1,6}$/.test(ticker)) continue;
+    if(['TICKER','STOCK','SECTOR','X','O','YES','NO','Entry','NAME'].includes(ticker)) continue;
+    const entry=num(c[15]); if(!entry||entry<=0) continue;
+    const max_val=num(c[17]);
+    const current_raw=(c[16]||'').trim();
+    const current_val=num(current_raw);
+    const max=max_val||current_val||entry;
+    // Date doubled = [23]; use as close date proxy
+    const close_date=(c[23]||'').trim();
+    const status=(c[25]||c[24]||'').trim();
+    const t={
+      ticker,
+      name:(c[4]||ticker).trim(),
+      sector:(c[5]||'').trim(),
+      industry:(c[6]||'').trim(),
+      theme:(c[7]||'').trim(),
+      entry_date:(c[9]||'').trim(),
+      contract:(c[12]||'').trim(),
+      strike:num(c[13])||0,
+      entry,
+      current:current_val||max||entry,
+      max,
+      close_date,
+      close_price:current_val||null,
+      status,
+    };
     Object.assign(t,calcPnlClosed(t));
     trades.push(t);
   }
   return trades;
 }
-
 
 // ── Load all data ─────────────────────────────────────────────────────────────
 async function loadData(){
@@ -527,26 +495,19 @@ async function loadData(){
   document.getElementById('tbody').innerHTML='<tr><td colspan="18"><div class="loading">Fetching active positions...</div></td></tr>';
   document.getElementById('closed-tbody').innerHTML='<tr><td colspan="15"><div class="loading">Fetching closed trades...</div></td></tr>';
 
-  // Fetch both in parallel
-  const [openRes,closedRes]=await Promise.allSettled([
-    fetch(OPEN_CSV+'&t='+Date.now()),
-    fetch(CLOSED_CSV+'&t='+Date.now()),
-  ]);
+  // Single tab — fetch once, parse both active and closed
+  let csvText = null;
+  try {
+    const res = await fetch(DATA_CSV+'&t='+Date.now());
+    if(res.ok) csvText = await res.text();
+  } catch(e) {}
 
-  // Parse active
-  if(openRes.status==='fulfilled'&&openRes.value.ok){
-    const text=await openRes.value.text();
-    ACTIVE=parseOpen(text);
+  if(csvText){
+    ACTIVE = parseOpen(csvText);
+    CLOSED = parseClosed(csvText);
   } else {
-    document.getElementById('error-area').innerHTML='<div class="error-box">⚠ Could not load active positions from Google Sheets. Check the sheet is published.</div>';
+    document.getElementById('error-area').innerHTML='<div class="error-box">⚠ Could not load data from Google Sheets. Check the sheet is published.</div>';
     ACTIVE=[];
-  }
-
-  // Parse closed
-  if(closedRes.status==='fulfilled'&&closedRes.value.ok){
-    const text=await closedRes.value.text();
-    CLOSED=parseClosed(text);
-  } else {
     CLOSED=[];
   }
 
