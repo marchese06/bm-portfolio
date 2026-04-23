@@ -128,7 +128,7 @@
     <div class="hdr-date" id="hdr-date">—</div>
     <div style="display:flex;align-items:center;gap:8px;justify-content:flex-end;margin-top:4px;">
       <div class="live"><span class="live-dot"></span>LIVE</div>
-      <span class="price-status loading" id="price-status">fetching prices…</span>
+      <span class="price-status loading" id="price-status">loading…</span>
     </div>
   </div>
 </header>
@@ -147,7 +147,7 @@
   <div class="legend">
     <span class="legend-item"><span class="legend-dot" style="background:rgba(0,229,160,0.6)"></span>Sell 50% at 2x</span>
     <span class="legend-item"><span class="legend-dot" style="background:rgba(91,140,255,0.6)"></span>Sell remaining 50% at 3x · fully out</span>
-    <span class="legend-item" style="font-size:11px;">~$1,000/position · live option prices via Yahoo Finance</span>
+    <span class="legend-item" style="font-size:11px;">~$1,000/position · live option prices via Cloudflare Worker</span>
     <span class="last-updated" id="last-updated"></span>
   </div>
   <div class="controls">
@@ -179,7 +179,7 @@
     <th data-col="theme">Theme</th>
     <th data-col="status">Status</th>
   </tr></thead>
-  <tbody id="tbody"><tr><td colspan="18"><div class="loading">Fetching live data...</div></td></tr></tbody>
+  <tbody id="tbody"><tr><td colspan="18"><div class="loading">Fetching active positions...</div></td></tr></tbody>
   </table>
   </div>
 </div>
@@ -220,17 +220,22 @@
 </div>
 
 <footer>
-  <p>BREAKOUT MULTIPLIER · 2x SELL 50% · 3x SELL REMAINING 50% · ~$1,000/POSITION · LIVE PRICES VIA YAHOO FINANCE</p>
+  <p>BREAKOUT MULTIPLIER · 2x SELL 50% · 3x SELL REMAINING 50% · ~$1,000/POSITION · LIVE PRICES VIA WORKER PROXY</p>
   <p id="footer-date"></p>
 </footer>
 </div>
 
 <script>
 // ── URLs ──────────────────────────────────────────────────────────────────────
-// Single standardized tab — same columns for open and closed trades
-const DATA_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRnBssDB2zK9HpOp9kb0zYGWAjlhR-GWxSKpqag06rzDm9myu_rN_-wXmGhcFxVchwqXr-jatRToc2b/pub?gid=1288747133&single=true&output=csv';
-const OPEN_CSV = DATA_CSV;
-const CLOSED_CSV = DATA_CSV;
+// Two tabs — CLEAN OPEN (active) and CLEAN CLOSED (closed trades)
+const PUB_BASE = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRnBssDB2zK9HpOp9kb0zYGWAjlhR-GWxSKpqag06rzDm9myu_rN_-wXmGhcFxVchwqXr-jatRToc2b/pub';
+const OPEN_CSV   = `${PUB_BASE}?gid=975618056&single=true&output=csv`;
+const CLOSED_CSV = `${PUB_BASE}?gid=1288747133&single=true&output=csv`;
+
+// Cloudflare Worker proxy for live Yahoo Finance option prices.
+// Deploy the worker from yahoo-proxy-worker.js, then paste your URL here.
+// Leave as empty string '' to disable live pricing.
+const WORKER_URL = 'https://yahoo-proxy.dan-b21.workers.dev';
 
 const TC = {
   'Software':'#5b8cff','Crypto/Data Center':'#7f5be8','Crypto':'#a56af5',
@@ -354,92 +359,102 @@ function calcPnlClosed(t){
   return{realized:Math.round(realized),unrealized:0,total_pnl,pnl_pct,rem_pct:0,stages,contracts};
 }
 
-// ── Yahoo Finance ─────────────────────────────────────────────────────────────
+// ── Yahoo Finance via Cloudflare Worker ──────────────────────────────────────
 const priceCache={};
 async function fetchPrice(sym){
   if(!sym) return null;
   if(priceCache[sym]!==undefined) return priceCache[sym];
-  const yUrl=`https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(sym)}?interval=1d&range=1d`;
-  const proxies=[
-    `https://corsproxy.io/?url=${encodeURIComponent(yUrl)}`,
-    `https://api.allorigins.win/raw?url=${encodeURIComponent(yUrl)}`,
-    `https://proxy.cors.sh/${yUrl}`,
-  ];
-  for(const url of proxies){
-    try{
-      const r=await fetch(url,{headers:{'Accept':'application/json','x-requested-with':'XMLHttpRequest'},signal:AbortSignal.timeout(8000)});
-      if(!r.ok) continue;
-      const d=await r.json();
-      const meta=d?.chart?.result?.[0]?.meta;
-      const price=meta?.regularMarketPrice??meta?.previousClose??null;
-      if(price!==null){priceCache[sym]=price;return price;}
-    }catch(e){}
+  if(!WORKER_URL || WORKER_URL.includes('YOUR-WORKER')){
+    priceCache[sym]=null; return null;
   }
-  priceCache[sym]=null; return null;
+  try{
+    const r=await fetch(`${WORKER_URL}/?symbol=${encodeURIComponent(sym)}`,{
+      signal:AbortSignal.timeout(10000),
+    });
+    if(!r.ok){ priceCache[sym]=null; return null; }
+    const d=await r.json();
+    const price = d?.price ?? d?.previousClose ?? null;
+    priceCache[sym]=price;
+    return price;
+  }catch(e){
+    priceCache[sym]=null; return null;
+  }
 }
 
 async function fetchAllPrices(trades){
   const ps=document.getElementById('price-status');
+  if(!WORKER_URL || WORKER_URL.includes('YOUR-WORKER')){
+    if(ps){ ps.textContent='worker not configured'; ps.className='price-status error'; }
+    return;
+  }
   ps.textContent=`fetching ${trades.length} prices…`; ps.className='price-status loading';
   let ok=0,fail=0;
-  for(let i=0;i<trades.length;i+=5){
-    const batch=trades.slice(i,i+5);
+  // Run in batches of 8 — Worker edge-caches for a minute so this is cheap
+  for(let i=0;i<trades.length;i+=8){
+    const batch=trades.slice(i,i+8);
     await Promise.all(batch.map(async t=>{
       const p=await fetchPrice(t.optionSymbol);
-      if(p!==null){t.current=p;t.curr_pct=Math.round(((p-t.entry)/t.entry)*100);ok++;}else fail++;
+      if(p!==null){
+        t.current=p;
+        t.curr_pct=Math.round(((p-t.entry)/t.entry)*100);
+        // Update max if current surpasses sheet's max
+        if(p>t.max){ t.max=p; t.max_pct=Math.round(((p-t.entry)/t.entry)*100); }
+        ok++;
+      } else fail++;
       Object.assign(t,calcPnl(t));
     }));
     render(); buildMetrics();
-    ps.textContent=`pricing ${Math.min(i+5,trades.length)}/${trades.length}…`;
-    await new Promise(r=>setTimeout(r,150));
+    ps.textContent=`pricing ${Math.min(i+8,trades.length)}/${trades.length}…`;
   }
   buildMetrics(); buildCharts(); render();
   if(fail===0&&ok>0){ps.textContent=`${ok} live prices ✓`;ps.className='price-status done';}
-  else if(ok===0){ps.textContent='prices unavailable (CORS)';ps.className='price-status error';}
+  else if(ok===0){ps.textContent='prices unavailable';ps.className='price-status error';}
   else{ps.textContent=`${ok} live · ${fail} n/a`;ps.className=ok>fail?'price-status done':'price-status error';}
 }
 
 // ── Parse OPEN CSV ────────────────────────────────────────────────────────────
+// CLEAN OPEN columns (0-indexed):
+//   0=Entry(date)  1=Ticker  2=Name  3=Sector  4=Industry  5=Theme
+//   6=Strike  7=Contract  8=Entry($)  9=Max($)  10=Max%
+//   11=Doubled  12=Days to 2x  13=Date 2x  14=Status  15=ZERO
 function parseOpen(text){
-  // Column layout (same for all rows in standardized tab):
-  // [0]=X/O, [3]=Ticker, [4]=Name, [5]=Sector, [6]=Industry, [7]=Theme
-  // [9]=EntryDate, [11]=Expiration, [12]=Contract, [13]=Strike, [14]=C/P
-  // [15]=Entry$, [16]=Current$, [17]=Max$, [18]=Curr%, [19]=Max%, [21]=Doubled
-  // [23]=DateDoubled, [25]=Status
   const trades=[];
   for(const line of text.split('\n')){
     const c=parseLine(line);
-    if(c.length<16) continue;
-    const marker=(c[0]||'').trim().toUpperCase();
-    if(marker!=='O') continue;                        // only O rows are active
-    const ticker=(c[3]||'').trim();
+    if(c.length<9) continue;
+    const ticker=(c[1]||'').trim().toUpperCase();
     if(!ticker||!/^[A-Z]{1,6}$/.test(ticker)) continue;
-    const entry=num(c[15]); if(!entry||entry<=0) continue;
-    const current_val=num(c[16]);
-    const max_val=num(c[17]);
-    const max=max_val||current_val||entry;
-    const status=((c[25]||'').trim()||'Open');
-    const expiration=(c[11]||'').trim();
-    const contract=(c[12]||'').trim();
-    const strike=num(c[13])||0;
-    const cp=(c[14]||'').trim();
-    const optionSymbol=buildSymbol(ticker,contract,expiration,(c[9]||'').trim(),strike,cp);
+    if(['TICKER','STOCK','SECTOR','X','O','YES','NO','NAME','ENTRY'].includes(ticker)) continue;
+    const entry_date=(c[0]||'').trim();
+    if(!/\d{1,2}\/\d{1,2}\/\d{2,4}/.test(entry_date)) continue;  // must be a dated row
+    const entry=num(c[8]); if(!entry||entry<=0) continue;
+    const max=num(c[9])||entry;
+    const max_pct=pct(c[10])||0;
+    const contract=(c[7]||'').trim();
+    const cp=/put/i.test(contract)?'P':'C';
+    const strike=num(c[6])||0;
+    // Expiration is implied by the contract name (e.g. "May 15th Call") + entry year
+    const optionSymbol=buildSymbol(ticker,contract,'',entry_date,strike,cp);
+    const doubled=(c[11]||'').trim().toUpperCase()==='YES';
+    const statusRaw=(c[14]||'').trim();
+    const status=statusRaw.includes('1/2')?'1/2 Open':(statusRaw||(doubled?'1/2 Open':'Open'));
     const t={
       ticker,
-      name:(c[4]||ticker).trim(),
-      sector:(c[5]||'').trim(),
-      industry:(c[6]||'').trim(),
-      theme:(c[7]||'').trim(),
-      entry_date:(c[9]||'').trim(),
+      name:(c[2]||ticker).trim(),
+      sector:(c[3]||'').trim(),
+      industry:(c[4]||'').trim(),
+      theme:(c[5]||'').trim(),
+      entry_date,
       contract,
       strike,
       entry,
-      current:current_val||max||entry,
+      current:max,           // no live prices — max from sheet is our proxy
       max,
-      curr_pct:pct(c[18])||0,
-      max_pct:pct(c[19])||0,
-      status:status.includes('1/2')?'1/2 Open':'Open',
+      curr_pct:max_pct,
+      max_pct,
+      status,
       optionSymbol,
+      date_doubled:(c[13]||'').trim(),
     };
     Object.assign(t,calcPnl(t));
     trades.push(t);
@@ -448,39 +463,42 @@ function parseOpen(text){
 }
 
 // ── Parse CLOSED CSV ─────────────────────────────────────────────────────────
-// Same standardized tab — X rows with status Closed/Rolled are closed trades.
+// Same columns as CLEAN OPEN, except column M (index 12) is the CLOSE DATE
+// instead of "Days to 2x".
 function parseClosed(text){
   const trades=[];
   for(const line of text.split('\n')){
     const c=parseLine(line);
-    if(c.length<16) continue;
-    const marker=(c[0]||'').trim().toUpperCase();
-    if(marker!=='X' && marker!=='x') continue;        // only X rows are closed
-    const ticker=(c[3]||'').trim();
+    if(c.length<9) continue;
+    const ticker=(c[1]||'').trim().toUpperCase();
     if(!ticker||!/^[A-Z]{1,6}$/.test(ticker)) continue;
-    if(['TICKER','STOCK','SECTOR','X','O','YES','NO','Entry','NAME'].includes(ticker)) continue;
-    const entry=num(c[15]); if(!entry||entry<=0) continue;
-    const max_val=num(c[17]);
-    const current_raw=(c[16]||'').trim();
-    const current_val=num(current_raw);
-    const max=max_val||current_val||entry;
-    // Date doubled = [23]; use as close date proxy
-    const close_date=(c[23]||'').trim();
-    const status=(c[25]||c[24]||'').trim();
+    if(['TICKER','STOCK','SECTOR','X','O','YES','NO','NAME','ENTRY'].includes(ticker)) continue;
+    const entry_date=(c[0]||'').trim();
+    if(!/\d{1,2}\/\d{1,2}\/\d{2,4}/.test(entry_date)) continue;
+    const entry=num(c[8]); if(!entry||entry<=0) continue;
+    const max=num(c[9])||entry;
+    const max_pct=pct(c[10])||0;
+    const contract=(c[7]||'').trim();
+    const strike=num(c[6])||0;
+    const close_date=(c[12]||'').trim();
+    const status=(c[14]||'').trim()||'Closed';
+    // Closed-trade P&L: hit 3x → sold both halves. Hit 2x only → half banked, half to $0.
+    // Didn't hit 2x → full loss. We infer stages from max_pct (>=300 → 3x, >=200 → 2x).
     const t={
       ticker,
-      name:(c[4]||ticker).trim(),
-      sector:(c[5]||'').trim(),
-      industry:(c[6]||'').trim(),
-      theme:(c[7]||'').trim(),
-      entry_date:(c[9]||'').trim(),
-      contract:(c[12]||'').trim(),
-      strike:num(c[13])||0,
+      name:(c[2]||ticker).trim(),
+      sector:(c[3]||'').trim(),
+      industry:(c[4]||'').trim(),
+      theme:(c[5]||'').trim(),
+      entry_date,
+      contract,
+      strike,
       entry,
-      current:current_val||max||entry,
+      current:max,
       max,
+      max_pct,
       close_date,
-      close_price:current_val||null,
+      close_price:max,   // exit price proxy — the max hit is the sell-trigger price
       status,
     };
     Object.assign(t,calcPnlClosed(t));
@@ -490,25 +508,44 @@ function parseClosed(text){
 }
 
 // ── Load all data ─────────────────────────────────────────────────────────────
+async function fetchCsv(url){
+  try {
+    const res = await fetch(url+'&t='+Date.now());
+    if(!res.ok) return {err:`HTTP ${res.status} ${res.statusText}`};
+    const txt = await res.text();
+    if(!txt || txt.length < 50) return {err:`empty response (${txt?.length||0} bytes)`};
+    return {txt};
+  } catch(e){
+    let msg = e.name+': '+e.message;
+    if(location.protocol==='file:') msg += ' — opening this file directly (file://) blocks cross-origin fetches. Use a local server or host it.';
+    return {err:msg};
+  }
+}
+
 async function loadData(){
   document.getElementById('error-area').innerHTML='';
   document.getElementById('tbody').innerHTML='<tr><td colspan="18"><div class="loading">Fetching active positions...</div></td></tr>';
   document.getElementById('closed-tbody').innerHTML='<tr><td colspan="15"><div class="loading">Fetching closed trades...</div></td></tr>';
 
-  // Single tab — fetch once, parse both active and closed
-  let csvText = null;
-  try {
-    const res = await fetch(DATA_CSV+'&t='+Date.now());
-    if(res.ok) csvText = await res.text();
-  } catch(e) {}
+  // Fetch both tabs in parallel
+  const [openRes, closedRes] = await Promise.all([fetchCsv(OPEN_CSV), fetchCsv(CLOSED_CSV)]);
 
-  if(csvText){
-    ACTIVE = parseOpen(csvText);
-    CLOSED = parseClosed(csvText);
+  const errs = [];
+  if(openRes.txt){
+    ACTIVE = parseOpen(openRes.txt);
+    if(ACTIVE.length===0) errs.push(`CLEAN OPEN loaded (${openRes.txt.length} bytes) but 0 trades parsed. First 200 chars: <code style="color:#f0f2f8;display:block;margin-top:8px;word-break:break-all">${openRes.txt.slice(0,200).replace(/</g,'&lt;')}</code>`);
   } else {
-    document.getElementById('error-area').innerHTML='<div class="error-box">⚠ Could not load data from Google Sheets. Check the sheet is published.</div>';
-    ACTIVE=[];
-    CLOSED=[];
+    ACTIVE = [];
+    errs.push(`CLEAN OPEN fetch failed: ${openRes.err}`);
+  }
+  if(closedRes.txt){
+    CLOSED = parseClosed(closedRes.txt);
+  } else {
+    CLOSED = [];
+    errs.push(`CLEAN CLOSED fetch failed: ${closedRes.err}`);
+  }
+  if(errs.length){
+    document.getElementById('error-area').innerHTML=`<div class="error-box">⚠ ${errs.join('<br><br>')}</div>`;
   }
 
   const now=new Date();
@@ -518,11 +555,15 @@ async function loadData(){
   document.getElementById('last-updated').textContent='Updated '+ts;
   document.getElementById('footer-date').textContent='LAST FETCHED '+ds+' · '+ts;
 
+  // No live prices — Yahoo is CORS-blocked and the sheet already has Max
+  const ps=document.getElementById('price-status');
+  if(ps){ ps.textContent='using sheet data'; ps.className='price-status done'; }
+
   buildMetrics(); buildCharts(); buildFilters(); render();
   buildClosedMetrics(); buildClosedCharts(); buildClosedFilters(); renderClosed();
 
-  await fetchAllPrices(ACTIVE);
-  buildMetrics(); buildCharts(); render();
+  // Pull live option prices via Worker proxy
+  if(ACTIVE.length) await fetchAllPrices(ACTIVE);
 }
 
 async function loadAll(){
@@ -668,8 +709,9 @@ function render(){
     const badge=t.status==='1/2 Open'?`<span class="badge b-half">½ open</span>`:`<span class="badge b-open">open</span>`;
     const stHtml=t.stages.length?t.stages.map(s=>`<span class="stage s${s[0]}">${s}</span>`).join(''):'<span class="dim" style="font-size:11px">—</span>';
     const loaded=priceCache[t.optionSymbol]!==undefined;
-    const nowCell=loaded?(priceCache[t.optionSymbol]!==null?`$${t.current.toFixed(2)}`:'<span class="dim">n/a</span>'):'<span class="curr-loading">…</span>';
-    const retCell=loaded&&priceCache[t.optionSymbol]!==null?`<span class="${pC(t.curr_pct)}">${pS(t.curr_pct)}</span>`:'<span class="dim">—</span>';
+    const hasPrice=loaded && priceCache[t.optionSymbol]!==null;
+    const nowCell=!loaded?'<span class="curr-loading">…</span>':(hasPrice?`$${t.current.toFixed(2)}`:'<span class="dim">n/a</span>');
+    const retCell=hasPrice?`<span class="${pC(t.curr_pct)}">${pS(t.curr_pct)}</span>`:'<span class="dim">—</span>';
     return`<tr>
       <td class="tc">${t.ticker}</td>
       <td class="nc" title="${t.name}">${t.name}</td>
@@ -681,7 +723,7 @@ function render(){
       <td class="curr-cell">${nowCell}</td>
       <td class="mono">${retCell}</td>
       <td class="mono dim">$${t.max}</td>
-      <td class="mono dim">${pS(t.max_pct)}</td>
+      <td class="mono ${pC(t.max_pct)}">${pS(t.max_pct)}</td>
       <td><div class="stages">${stHtml}</div></td>
       <td class="upnl">${t.unrealized>0?'$'+t.unrealized.toLocaleString():'—'}</td>
       <td class="pnl ${pC(t.total_pnl)}">${dol(t.total_pnl)}</td>
