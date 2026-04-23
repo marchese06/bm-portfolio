@@ -272,11 +272,12 @@ const tColor=t=>TC[t.theme]||TC[t.sector]||'#888';
 
 // ── Option symbol ─────────────────────────────────────────────────────────────
 const MONTHS={jan:1,feb:2,mar:3,apr:4,may:5,jun:6,jul:7,aug:8,sep:9,oct:10,nov:11,dec:12};
-function buildSymbol(ticker,contract,entryDate,strike){
+function buildSymbol(ticker,contract,entryDate,strike,cpFlag){
   try{
     const p=contract.toLowerCase().replace(/[^a-z0-9 ]/g,'').trim().split(/\s+/);
     const mo=MONTHS[p[0].slice(0,3)], dy=parseInt(p[1]);
-    const cp=p[p.length-1].startsWith('p')?'P':'C';
+    // Use explicit C/P flag if provided, else parse from contract name
+    const cp=cpFlag?(cpFlag.toUpperCase().startsWith('P')?'P':'C'):p[p.length-1].startsWith('p')?'P':'C';
     if(!mo||!dy||isNaN(dy)) return null;
     const ey=entryDate?parseInt(entryDate.split('/')[2]):new Date().getFullYear();
     let yr=ey;
@@ -387,31 +388,52 @@ async function fetchAllPrices(trades){
 // ── Parse OPEN CSV ────────────────────────────────────────────────────────────
 function parseOpen(text){
   const trades=[];
-  for(const line of text.split('\n').slice(1)){
+  for(const line of text.split('\n')){
     const c=parseLine(line);
-    if(c.length<8) continue;
-    const ticker=(c[1]||'').trim();
+    if(c.length<10) continue;
+    // Rows start with O (open) marker at index 0
+    const marker=(c[0]||'').trim().toUpperCase();
+    if(marker!=='O') continue;
+
+    // Newer format: O | NOTES/CONTRACT_VALUE | Ticker | Name | Sector | Industry | Theme | C/S Price | EntryDate | EmailTime | Expiration | Strike | C/P | Contract | Entry$ | Current$ | Max$ | Curr% | Max% | ... | Status
+    let ticker=(c[2]||'').trim();
     if(!ticker||!/^[A-Z]{1,6}$/.test(ticker)) continue;
-    if(['TICKER','STOCK','SECTOR'].includes(ticker)) continue;
-    const entry=num(c[13]);
+    if(['TICKER','STOCK','SECTOR','X','O','YES','NO'].includes(ticker)) continue;
+
+    const entry=num(c[14]);
     if(!entry||entry<=0) continue;
-    const max=num(c[15]);
-    const status=(c[23]||c[c.length-1]||'').trim();
-    const optionSymbol=buildSymbol(ticker,(c[10]||'').trim(),(c[7]||'').trim(),num(c[11])||0);
+    const current_val=num(c[15]);
+    const max_val=num(c[16]);
+    const max=max_val||current_val||entry;
+
+    // Status is typically last meaningful column — find it
+    let status='Open';
+    for(let i=c.length-1;i>=20;i--){
+      const v=(c[i]||'').trim();
+      if(['Open','1/2 Open','Closed','Rolled'].some(s=>v.includes(s))){status=v;break;}
+    }
+
+    const entry_date=(c[8]||'').trim();
+    const expiration=(c[10]||'').trim();
+    const strike=num(c[11])||0;
+    const cp=(c[12]||'').trim();
+    const contract=(c[13]||'').trim();
+    const optionSymbol=buildSymbol(ticker,expiration,entry_date,strike,cp);
+
     const t={
       ticker,
-      name:(c[2]||ticker).trim(),
-      sector:(c[3]||'').trim(),
-      industry:(c[4]||'').trim(),
-      theme:(c[5]||'').trim(),
-      entry_date:(c[7]||'').trim(),
-      contract:(c[10]||'').trim(),
-      strike:num(c[11])||0,
+      name:(c[3]||ticker).trim(),
+      sector:(c[4]||'').trim(),
+      industry:(c[5]||'').trim(),
+      theme:(c[6]||'').trim(),
+      entry_date,
+      contract,
+      strike,
       entry,
-      current:max||entry,
-      max:max||entry,
-      curr_pct:pct(c[16])||0,
-      max_pct:pct(c[17])||0,
+      current:current_val||max||entry,
+      max,
+      curr_pct:pct(c[17])||0,
+      max_pct:pct(c[18])||0,
       status:status.includes('1/2')?'1/2 Open':'Open',
       optionSymbol,
     };
@@ -422,91 +444,82 @@ function parseOpen(text){
 }
 
 // ── Parse CLOSED CSV ──────────────────────────────────────────────────────────
-// CLOSED TRADES tab has same column structure as CLEAN OPEN.
-// Ticker is at index 2 (with the "SPEAKER NOTES" prefix column layout),
-// or at index 3 for older rows. We detect by sniffing which column looks like a ticker.
-// Key columns (0-based):
-//   0=X/O marker, 1=SPEAKER NOTES or CONTRACT VALUE text, 2=Ticker, 3=Name,
-//   4=Sector, 5=Industry, 6=Theme, 7=C/S Price, 8=Entry Date, 9=Email Time,
-//   10=Expiration, 11=Contract, 12=Strike, 13=C/P, 14=Entry$, 15=Current$,
-//   16=Max$, 17=Current%, 18=Max%, ...23=Trade Status, 24=Notes
-//   "Date Doubled" is around index 22.
+// The CLOSED TRADES tab has multiple section layouts. We auto-detect by finding
+// the ticker position and inferring entry$/max$ from there.
+// Layout A (older): Entry | Ticker | Strike | Contract | Entry$ | Max$ | Max% | Doubled | Days | Date2x | CloseDate | ClosePrice | Status
+//   ticker=1, entry=4, max=5, closeDate=10, closePrice=11
+// Layout B (master sheet style): X/O | NOTES | Ticker | Name | Sector | Industry | Theme | Price | EntryDate | Time | Expiry | Contract | Strike | C/P | Entry$ | Current$ | Max$ | ...
+//   ticker=2 or 3, entry=14+, max=16+
+
 function parseClosed(text){
   const trades=[];
-  for(const line of text.split('\n').slice(1)){
+  for(const line of text.split('\n')){
     const c=parseLine(line);
-    if(c.length<10) continue;
+    if(c.length<5) continue;
 
-    // Find ticker: try index 2 first (newer rows), then 3 (older rows with fewer leading cols)
-    let tickerIdx=2;
-    let ticker=(c[2]||'').trim();
-    // If c[2] doesn't look like a ticker, try c[3]
-    if(!ticker||ticker.length>7||!/^[A-Z]/.test(ticker)){
-      ticker=(c[3]||'').trim();
-      tickerIdx=3;
+    // Skip pure header rows
+    const first=(c[0]||'').trim();
+    if(['SPEAKER NOTES','Entry','Ticker','Stock/Ticker','NO_HEADER','X','O','BOX Blog'].includes(first)) continue;
+
+    let ticker='', entry=null, max=null, close_date='', close_price=null;
+    let name='', sector='', industry='', theme='', entry_date='', contract='', strike=0;
+
+    // ── Layout A: Entry date | Ticker | Strike | Contract | Entry$ | Max$ | Max% | Doubled | Days | Date2x | CloseDate | ClosePrice
+    // Signature: c[1] looks like a ticker AND c[4] is a number AND c[10] is a date
+    const maybeTickerA=(c[1]||'').trim();
+    const maybeEntryA=num(c[4]);
+    const maybeDateA=(c[10]||'').trim();
+    if(maybeTickerA&&/^[A-Z]{1,6}$/.test(maybeTickerA)&&maybeEntryA&&maybeEntryA>0&&maybeDateA.match(/\d{1,2}\/\d{1,2}\/\d{2,4}/)){
+      ticker=maybeTickerA;
+      entry_date=(c[0]||'').trim();
+      strike=num(c[2])||0;
+      contract=(c[3]||'').trim();
+      entry=maybeEntryA;
+      max=num(c[5])||entry;
+      close_date=maybeDateA;
+      close_price=num(c[11])||null;
     }
-    if(!ticker||!/^[A-Z]{1,6}$/.test(ticker)) continue;
-    if(['TICKER','STOCK','SECTOR','X','O'].includes(ticker)) continue;
 
-    const offset=tickerIdx-2; // 0 for new rows, 1 for old rows
-    const name=(c[3+offset]||ticker).trim();
-    const sector=(c[4+offset]||'').trim();
-    const industry=(c[5+offset]||'').trim();
-    const theme=(c[6+offset]||'').trim();
-    const entry_date=(c[8+offset]||'').trim();
-    const contract=(c[11+offset]||'').trim();
-    const strike=num(c[12+offset])||0;
-    const entry=num(c[14+offset]);
-    if(!entry||entry<=0) continue;
-    const current_val=num(c[15+offset]);
-    const max_val=num(c[16+offset]);
-    const max=max_val||current_val||entry;
-
-    // "Date Doubled" = index 22+offset; look for a close date in that range or later
-    let close_date='';
-    // Search from index 20 onward for a date pattern
-    for(let i=20+offset;i<Math.min(c.length,30);i++){
-      const v=(c[i]||'').trim();
-      if(v.match(/^\d{1,2}\/\d{1,2}\/\d{2,4}$/)){
-        close_date=v; break;
+    // ── Layout B: master sheet style, ticker at index 2 or 3
+    if(!ticker){
+      let tIdx=2;
+      let t=(c[2]||'').trim();
+      if(!t||t.length>7||!/^[A-Z]/.test(t)){t=(c[3]||'').trim();tIdx=3;}
+      if(t&&/^[A-Z]{1,6}$/.test(t)&&!['TICKER','STOCK','SECTOR','X','O','YES','NO','Entry','NAME'].includes(t)){
+        const off=tIdx-2;
+        const e=num(c[14+off]);
+        if(e&&e>0){
+          ticker=t;
+          name=(c[3+off]||t).trim();
+          sector=(c[4+off]||'').trim();
+          industry=(c[5+off]||'').trim();
+          theme=(c[6+off]||'').trim();
+          entry_date=(c[8+off]||'').trim();
+          contract=(c[11+off]||'').trim();
+          strike=num(c[12+off])||0;
+          entry=e;
+          const cv=num(c[15+off]);
+          const mv=num(c[16+off]);
+          max=mv||cv||entry;
+          // Find close date from index 20+ (date doubled or close date)
+          for(let i=20+off;i<Math.min(c.length,28);i++){
+            const v=(c[i]||'').trim();
+            if(v.match(/^\d{1,2}\/\d{1,2}\/\d{2,4}$/)){close_date=v;break;}
+          }
+        }
       }
     }
-    // If no date found in range, try "Date Doubled" which is 22+offset
-    if(!close_date){
-      const v=(c[22+offset]||'').trim();
-      if(v.match(/\d{1,2}\/\d{1,2}\/\d{2,4}/)) close_date=v;
-    }
 
-    // Trade status: look for "Closed", "Open", "Rolled" around index 23-25
-    let status='Closed';
-    for(let i=23+offset;i<Math.min(c.length,27);i++){
-      const v=(c[i]||'').trim();
-      if(['Closed','Open','Rolled','1/2 Open'].some(s=>v.includes(s))){
-        status=v; break;
-      }
-    }
+    if(!ticker||!entry||entry<=0) continue;
+    if(['TICKER','STOCK','Entry','YES','NO','Closed','Open'].includes(ticker)) continue;
 
-    const t={
-      ticker,
-      name,
-      sector,
-      industry,
-      theme,
-      entry_date,
-      contract,
-      strike,
-      entry,
-      current:current_val||max||entry,
-      max,
-      close_date,
-      close_price:current_val||max||null,
-      status,
-    };
+    const t={ticker,name:name||ticker,sector,industry,theme,entry_date,contract,strike,entry,current:close_price||max||entry,max,close_date,close_price};
     Object.assign(t,calcPnlClosed(t));
     trades.push(t);
   }
   return trades;
 }
+
 
 // ── Load all data ─────────────────────────────────────────────────────────────
 async function loadData(){
