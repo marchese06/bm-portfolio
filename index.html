@@ -260,15 +260,15 @@
   </div>
 
   <div class="legend" style="margin-bottom:12px;">
-    <span class="legend-item"><span class="sq-badge sq-hot" style="font-size:11px;">HOT</span>≥ 85</span>
-    <span class="legend-item"><span class="sq-badge sq-warm" style="font-size:11px;">WARM</span>70–85</span>
-    <span class="legend-item"><span class="sq-badge sq-cool" style="font-size:11px;">COOL</span>&lt; 70</span>
+    <span class="legend-item"><span class="sq-badge sq-hot" style="font-size:11px;">HOT</span>≥ 90</span>
+    <span class="legend-item"><span class="sq-badge sq-warm" style="font-size:11px;">WARM</span>75–90</span>
+    <span class="legend-item"><span class="sq-badge sq-cool" style="font-size:11px;">COOL</span>&lt; 75</span>
     <span class="legend-item" style="margin-left:8px;padding-left:8px;border-left:1px solid var(--border);">
       <span style="color:#22c55e;font-family:var(--mono);font-size:12px;">Bullish</span>&nbsp;last OB+RSI≥50 &nbsp;
       <span style="color:#ef4444;font-family:var(--mono);font-size:12px;">Bearish</span>&nbsp;last OS+RSI&lt;50 &nbsp;
       <span style="color:#888;font-family:var(--mono);font-size:12px;">Neutral</span>&nbsp;mixed
     </span>
-    <span style="margin-left:auto;font-family:var(--mono);font-size:11px;color:var(--text3);">Score = 100 − (RelBBW × NormBBW) · click row to expand</span>
+    <span style="margin-left:auto;font-family:var(--mono);font-size:11px;color:var(--text3);"></span>
   </div>
 
   <div class="tbl-wrap">
@@ -833,8 +833,8 @@ function sqRegimeInfo(rsi, sig) {
 }
 
 function sqScoreTheme(s) {
-  if (s>=85) return {label:"HOT", color:"#ef4444",bg:"rgba(239,68,68,.12)",cls:"sq-hot"};
-  if (s>=70) return {label:"WARM",color:"#f59e0b",bg:"rgba(245,158,11,.12)",cls:"sq-warm"};
+  if (s>=90) return {label:"HOT", color:"#ef4444",bg:"rgba(239,68,68,.12)",cls:"sq-hot"};
+  if (s>=75) return {label:"WARM",color:"#f59e0b",bg:"rgba(245,158,11,.12)",cls:"sq-warm"};
   return           {label:"COOL",color:"#60a5fa",bg:"rgba(96,165,250,.10)",cls:"sq-cool"};
 }
 
@@ -968,15 +968,14 @@ function renderSqueeze() {
   });
 
   const loaded = SQ_TICKERS.filter(s=>sqData[s]);
-  const hot    = loaded.filter(s=>sqData[s].st.score>=85).length;
-  const warm   = loaded.filter(s=>sqData[s].st.score>=70&&sqData[s].st.score<85).length;
+  const hot    = loaded.filter(s=>sqData[s].st.score>=90).length;
+  const warm   = loaded.filter(s=>sqData[s].st.score>=75&&sqData[s].st.score<90).length;
   const bull   = loaded.filter(s=>sqRegimeInfo(sqData[s].rsi,sqData[s].lastSignal)?.label==='Bullish').length;
   const bear   = loaded.filter(s=>sqRegimeInfo(sqData[s].rsi,sqData[s].lastSignal)?.label==='Bearish').length;
 
   document.getElementById('sq-metrics').innerHTML = loaded.length===0?'':`
-    <div class="mc hi"><div class="mc-label">Loaded</div><div class="mc-val g">${loaded.length}</div><div class="mc-sub">of ${SQ_TICKERS.length} tickers</div></div>
-    <div class="mc"><div class="mc-label">HOT ≥ 85</div><div class="mc-val r">${hot}</div><div class="mc-sub">tightest squeeze</div></div>
-    <div class="mc"><div class="mc-label">WARM 70–85</div><div class="mc-val o">${warm}</div><div class="mc-sub">building squeeze</div></div>
+    <div class="mc"><div class="mc-label">HOT ≥ 90</div><div class="mc-val r">${hot}</div><div class="mc-sub">tightest squeeze</div></div>
+    <div class="mc"><div class="mc-label">WARM 75–90</div><div class="mc-val o">${warm}</div><div class="mc-sub">building squeeze</div></div>
     <div class="mc"><div class="mc-label">Bullish</div><div class="mc-val g">${bull}</div><div class="mc-sub">last OB + RSI ≥ 50</div></div>
     <div class="mc"><div class="mc-label">Bearish</div><div class="mc-val r">${bear}</div><div class="mc-sub">last OS + RSI < 50</div></div>`;
 
