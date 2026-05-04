@@ -275,10 +275,10 @@
           <th onclick="sqSort('sym')">Symbol <span id="sq-arr-sym"></span></th>
           <th onclick="sqSort('name')">Company <span id="sq-arr-name"></span></th>
           <th onclick="sqSort('sector')">Sector <span id="sq-arr-sector"></span></th>
-          <th onclick="sqSort('regime')">Regime <span id="sq-arr-regime"></span></th>
+          <th style="text-align:right" onclick="sqSort('price')">Price <span id="sq-arr-price"></span></th>
           <th onclick="sqSort('st')">Daily Score <span id="sq-arr-st">↓</span></th>
           <th onclick="sqSort('lt')">Weekly Score <span id="sq-arr-lt"></span></th>
-          <th style="text-align:right" onclick="sqSort('price')">Price <span id="sq-arr-price"></span></th>
+          <th onclick="sqSort('regime')">Regime <span id="sq-arr-regime"></span></th>
           <th style="text-align:right" onclick="sqSort('rsi')">RSI(14) <span id="sq-arr-rsi"></span></th>
           <th style="text-align:right" onclick="sqSort('earnings')">Earnings <span id="sq-arr-earnings"></span></th>
         </tr>
@@ -1025,7 +1025,7 @@ function renderSqueeze() {
       <td class="tc">${sym}</td>
       <td class="nc" title="${r.name}">${r.name}</td>
       <td class="sq-sector">${r.sector||'—'}</td>
-      <td>${regHTML}</td>
+      <td style="text-align:right;font-family:var(--mono);font-size:14px;font-weight:600;color:#e0e0e0">$${r.st.price.toFixed(2)}</td>
       <td>
         <div class="sq-score">
           <div><span class="sq-badge ${stT.cls}">${stT.label}</span><span class="sq-num" style="color:${stT.color}">${r.st.score.toFixed(1)}</span></div>
@@ -1038,7 +1038,7 @@ function renderSqueeze() {
           <div class="sq-bar-track"><div class="sq-bar-fill" style="width:${ltPct}%;background:${ltT.color}"></div></div>
         </div>
       </td>
-      <td style="text-align:right;font-family:var(--mono);font-size:14px;font-weight:600;color:#e0e0e0">$${r.st.price.toFixed(2)}</td>
+      <td>${regHTML}</td>
       <td style="text-align:right;font-family:var(--mono);font-size:14px;color:${rsiColor}">${r.rsi!=null?r.rsi.toFixed(1):dash}</td>
       <td style="text-align:right">${sqEarningsHTML(sym)}</td>
     </tr>`;
