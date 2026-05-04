@@ -252,11 +252,8 @@
       <option value="Neutral">Neutral</option>
       <option value="Bearish">Bearish</option>
     </select>
-    <button class="refresh-btn" id="sq-run-btn" onclick="runSqueeze()" style="margin-left:8px;">▶ Run Squeeze Scan</button>
-    <button id="sq-stop-btn" onclick="sqStop=true" style="display:none;padding:5px 14px;border:1px solid rgba(255,77,109,0.4);border-radius:20px;background:rgba(255,77,109,0.08);font-size:15px;font-family:var(--mono);color:var(--red);cursor:pointer;">■ Stop</button>
     <span id="sq-cache-status" style="font-family:var(--mono);font-size:12px;color:var(--text3);margin-left:8px;"></span>
     <input class="srch" id="sq-srch" placeholder="Search ticker…" oninput="renderSqueeze()">
-    <span class="cnt" id="sq-cnt"></span>
   </div>
 
   <div class="legend" style="margin-bottom:12px;">
@@ -979,7 +976,7 @@ function renderSqueeze() {
     <div class="mc"><div class="mc-label">Bullish</div><div class="mc-val g">${bull}</div><div class="mc-sub">last OB + RSI ≥ 50</div></div>
     <div class="mc"><div class="mc-label">Bearish</div><div class="mc-val r">${bear}</div><div class="mc-sub">last OS + RSI < 50</div></div>`;
 
-  document.getElementById('sq-cnt').textContent = `${filtered.filter(s=>sqData[s]).length} of ${SQ_TICKERS.length}`;
+  
 
   const dash = '<span style="color:#444">—</span>';
   document.getElementById('sq-tbody').innerHTML = filtered.map(sym=>{
@@ -1079,9 +1076,8 @@ async function loadSqFromCache() {
     renderSqueeze();
 
     const count = Object.keys(data.scores).length;
-    status.style.color = 'var(--green)';
-    status.textContent = `Auto-updated ${ageMins}m ago · ${count} tickers · next update ~${30 - (ageMins % 30)}m`;
-    document.getElementById('sq-run-btn').textContent = '↻ Force Rescan';
+    status.style.color = 'var(--text3)';
+    status.textContent = `Next update ~${30 - (ageMins % 30)}m`;
 
   } catch(e) {
     status.style.color = 'var(--text3)';
