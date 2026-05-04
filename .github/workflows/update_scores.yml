@@ -2,8 +2,10 @@ name: Update Squeeze Scores
 
 on:
   schedule:
-    # Every 30 min Mon-Fri during US market hours (9am-5pm ET = 1pm-9pm UTC)
-    - cron: '0,30 13-21 * * 1-5'
+    # Every 30 min Mon-Fri during US market hours (9:30am-4pm ET = 1:30pm-8pm UTC)
+    - cron: '30 13 * * 1-5'
+    - cron: '0,30 14-19 * * 1-5'
+    - cron: '0 20 * * 1-5'
   workflow_dispatch:   # also allow manual trigger from GitHub Actions tab
 
 permissions:
