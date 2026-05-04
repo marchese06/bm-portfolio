@@ -224,11 +224,48 @@ def main():
 
         time.sleep(DELAY)
 
+    # ── Fetch earnings from Yahoo Finance (no key, no rate limit) ───────────────
+    earnings = {}
+    print("\nFetching earnings calendar from Yahoo Finance…")
+    from datetime import date as date_cls
+    today = date_cls.today()
+    ticker_set = set(TICKERS)
+    for sym in TICKERS:
+        try:
+            url = f"https://query1.finance.yahoo.com/v10/finance/quoteSummary/{sym}?modules=calendarEvents"
+            r = requests.get(url, headers={"User-Agent": "Mozilla/5.0"}, timeout=10)
+            if not r.ok:
+                continue
+            data = r.json()
+            dates = data.get("quoteSummary", {}).get("result", [{}])[0].get("calendarEvents", {}).get("earnings", {}).get("earningsDate", [])
+            if not dates:
+                continue
+            candidates = []
+            for e in dates:
+                raw = e.get("raw")
+                if raw is None:
+                    continue
+                import datetime
+                d = datetime.date.fromtimestamp(raw)
+                days = (d - today).days
+                candidates.append({"date": str(d), "days": days})
+            if candidates:
+                # Pick nearest upcoming, or most recent past
+                upcoming = [c for c in candidates if c["days"] >= 0]
+                pick = min(upcoming, key=lambda x: x["days"]) if upcoming else min(candidates, key=lambda x: abs(x["days"]))
+                earnings[sym] = pick["date"]
+                print(f"  {sym}: {pick['date']} ({pick['days']}d)")
+        except Exception as e:
+            pass  # silently skip — static table is fallback
+        time.sleep(0.1)
+    print(f"  Earnings loaded for {len(earnings)} tickers")
+
     output = {
-        "updated": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
-        "count":   len(scores),
-        "scores":  scores,
-        "errors":  errors,
+        "updated":  datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "count":    len(scores),
+        "scores":   scores,
+        "earnings": {sym: v["date"] for sym, v in earnings.items()},
+        "errors":   errors,
     }
 
     with open("scores.json", "w") as f:
