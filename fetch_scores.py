@@ -21,15 +21,15 @@ TICKERS = [
     "BTDR","BTG","BULL","BX","C","CAG","CCJ","CCL","CDE","CDNS",
     "CE","CELH","CF","CHTR","CIFR","CLF","CLOV","CLSK","CLX","CMCSA",
     "CMG","CNC","CNI","CNQ","COF","COHR","COIN","COP","CORZ","CPNG",
-    "CPRI","CRCL","CRDO","CRM","CRML","CRWD","CRWV","CSCO","CSX","CTRA",
+    "CPRI","CRCL","CRCL","CRDO","CRM","CRML","CRWD","CRWV","CSCO","CSX","CTRA",
     "CVE","CVI","CVNA","CVS","CVX","DAL","DELL","DINO","DIS","DOW",
     "DUOL","DVN","EH","ELF","ENPH","ENVX","EOSE","EQT","EQX","ET",
-    "EXE","F","FANG","FCX","FIG","FLEX","FLY","FRMI","FSLR","FSLY",
+    "EXE","F","FANG","FCX","FIG","FIG","FLEX","FLY","FRMI","FRMI","FSLR","FSLY",
     "FTAI","GE","GFS","GIS","GLW","GLXY","GM","GME","GOOG","GOOGL",
     "GRPN","GS","GSK","GT","HAL","HCA","HD","HIMS","HIVE","HL",
     "HON","HOOD","HPE","HPQ","HUM","HUT","IAG","IBM","IBRX","INDI",
     "INTC","IONQ","IQ","IREN","JBLU","JD","JMIA","JNJ","JOBY","JPM",
-    "KGC","KHC","KLAR","KMI","KO","LAC","LAES","LCID","LI","LLY",
+    "KGC","KHC","KLAR","KLAR","KMI","KO","LAC","LAES","LCID","LI","LLY",
     "LMND","LNG","LRCX","LULU","LUNR","LUV","LYV","M","MA","MARA",
     "MCD","MCHP","MDLZ","MDT","META","MO","MOS","MP","MPC","MRK",
     "MRNA","MRVL","MS","MSFT","MSTR","MU","NBIS","NEE","NEM","NET",
@@ -199,10 +199,10 @@ def main():
                     raise ValueError(wd.get("message", "week error"))
                 day_vals = dd.get("values", [])
                 wk_vals  = wd.get("values", [])
-                if len(day_vals) < 50:
-                    raise ValueError(f"only {len(day_vals)} daily bars")
-                if len(wk_vals)  < 50:
-                    raise ValueError(f"only {len(wk_vals)} weekly bars")
+                if len(day_vals) < 14:
+                    raise ValueError(f"only {len(day_vals)} daily bars (need 14+)")
+                if len(wk_vals)  < 14:
+                    raise ValueError(f"only {len(wk_vals)} weekly bars (need 14+)")
 
                 st = score_from_vals(day_vals, 252)
                 lt = score_from_vals(wk_vals,  252)
