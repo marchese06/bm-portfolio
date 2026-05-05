@@ -216,7 +216,8 @@ def main():
                     "rsi":        round(rsi, 2) if rsi is not None else None,
                     "lastSignal": last_signal,
                 }
-                print(f"  {sym}: ST={st['score']:.1f}  LT={lt['score']:.1f}  RSI={rsi:.1f if rsi else '—'}")
+                rsi_str = f"{rsi:.1f}" if rsi is not None else '—'
+                print(f"  {sym}: ST={st['score']:.1f}  LT={lt['score']:.1f}  RSI={rsi_str}")
 
             except Exception as e:
                 print(f"  {sym} error: {e}")
@@ -245,8 +246,8 @@ def main():
                 raw = e.get("raw")
                 if raw is None:
                     continue
-                import datetime
-                d = datetime.date.fromtimestamp(raw)
+                from datetime import date as _date
+                d = _date.fromtimestamp(raw)
                 days = (d - today).days
                 candidates.append({"date": str(d), "days": days})
             if candidates:
