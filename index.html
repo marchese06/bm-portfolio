@@ -591,17 +591,18 @@ function buildMetrics(){
 function buildMultiplierRates(){
   const n=CLOSED.length;
   if(!n){ document.getElementById('multiplier-rates').innerHTML=''; return; }
+  const multColors={2:'var(--green)',3:'var(--blue)',4:'#ff8c42',5:'var(--red)',10:'var(--gold)'};
   const rates=[2,3,4,5,10].map(x=>{
-    const threshold=(x-1)*100; // 2x=100%, 3x=200%, 4x=300% etc
+    const threshold=(x-1)*100;
     const count=CLOSED.filter(t=>t.max_pct>=threshold).length;
     const pct=Math.round(count/n*100);
-    const col=x>=5?'var(--gold)':x>=3?'var(--green)':'var(--blue)';
-    return `<div style="display:inline-flex;align-items:center;gap:6px;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:6px 14px;">
-      <span style="font-family:var(--mono);font-size:13px;color:var(--text3)">${x}x Rate</span>
-      <span style="font-family:var(--mono);font-size:18px;font-weight:700;color:${col}">${pct}%</span>
+    const col=multColors[x];
+    return `<div style="display:inline-flex;flex-direction:column;align-items:center;gap:2px;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:8px 16px;">
+      <span style="font-family:var(--mono);font-size:12px;color:var(--text3)">${x}x Rate</span>
+      <span style="font-family:var(--mono);font-size:20px;font-weight:700;color:${col}">${pct}%</span>
     </div>`;
   });
-  document.getElementById('multiplier-rates').innerHTML=rates.join('');
+  document.getElementById('multiplier-rates').innerHTML=`<div style="display:flex;gap:8px;justify-content:center;width:100%;">${rates.join('')}</div>`;
 }
 
 function buildClosedMetrics(){
