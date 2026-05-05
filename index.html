@@ -252,6 +252,20 @@
       <option value="Neutral">Neutral</option>
       <option value="Bearish">Bearish</option>
     </select>
+    <span class="ctrl-label" style="margin-left:8px;">Daily:</span>
+    <select class="sq-select" id="sq-daily-filter" onchange="renderSqueeze()">
+      <option value="">All</option>
+      <option value="HOT">HOT ≥90</option>
+      <option value="WARM">WARM 75-90</option>
+      <option value="COOL">COOL &lt;75</option>
+    </select>
+    <span class="ctrl-label" style="margin-left:8px;">Weekly:</span>
+    <select class="sq-select" id="sq-weekly-filter" onchange="renderSqueeze()">
+      <option value="">All</option>
+      <option value="HOT">HOT ≥90</option>
+      <option value="WARM">WARM 75-90</option>
+      <option value="COOL">COOL &lt;75</option>
+    </select>
     <span id="sq-cache-status" style="font-family:var(--mono);font-size:12px;color:var(--text3);margin-left:8px;"></span>
     <input class="srch" id="sq-srch" placeholder="Search ticker…" oninput="renderSqueeze()">
   </div>
@@ -954,6 +968,8 @@ function renderSqueeze() {
 
   const sectorFilter = sel.value;
   const regimeFilter = document.getElementById('sq-regime-filter').value;
+  const dailyFilter  = document.getElementById('sq-daily-filter').value;
+  const weeklyFilter = document.getElementById('sq-weekly-filter').value;
   const q = (document.getElementById('sq-srch').value||'').toLowerCase();
 
   const sorted = [...SQ_TICKERS].sort((a,b)=>{
@@ -966,6 +982,18 @@ function renderSqueeze() {
     const r = sqData[sym];
     if (sectorFilter && r?.sector!==sectorFilter) return false;
     if (regimeFilter && sqRegimeInfo(r?.rsi,r?.lastSignal)?.label!==regimeFilter) return false;
+    if (dailyFilter) {
+      const ds = r?.st?.score??-1;
+      if (dailyFilter==='HOT'  && ds < 90)  return false;
+      if (dailyFilter==='WARM' && (ds < 75 || ds >= 90)) return false;
+      if (dailyFilter==='COOL' && ds >= 75) return false;
+    }
+    if (weeklyFilter) {
+      const ws = r?.lt?.score??-1;
+      if (weeklyFilter==='HOT'  && ws < 90)  return false;
+      if (weeklyFilter==='WARM' && (ws < 75 || ws >= 90)) return false;
+      if (weeklyFilter==='COOL' && ws >= 75) return false;
+    }
     if (q && !sym.toLowerCase().includes(q) && !(r?.name||'').toLowerCase().includes(q)) return false;
     return true;
   });
