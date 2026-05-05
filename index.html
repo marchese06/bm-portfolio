@@ -599,7 +599,7 @@ function buildClosedMetrics(){
   const roi=Math.round((totalPnl/totalCost)*100);
   const best=CLOSED.reduce((a,b)=>a.total_pnl>b.total_pnl?a:b);
   document.getElementById('closed-metrics').innerHTML=[
-    {l:'Total Banked',v:dol(totalPnl),c:totalPnl>=0?'g':'r',s:`${n} closed positions`},
+    {l:'Total Profits',v:dol(totalPnl),c:totalPnl>=0?'g':'r',s:`${n} closed positions`},
     {l:'Win Rate',v:wr+'%',c:'g',s:`${wins.length} wins · ${n-wins.length-evens.length} losses`},
     {l:'ROI',v:roi+'%',c:roi>=0?'g':'r',s:'$'+totalCost.toLocaleString()+' total deployed'},
     {l:'Best Exit',v:best.ticker,c:'o',s:dol(best.total_pnl)+' banked'},
