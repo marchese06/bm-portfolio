@@ -34,7 +34,7 @@ TICKERS = [
     "MCD","MCHP","MDLZ","MDT","META","MO","MOS","MP","MPC","MRK",
     "MRNA","MRVL","MS","MSFT","MSTR","MU","NBIS","NEE","NEM","NET",
     "NG","NIO","NKE","NNE","NOK","NOW","NTLA","NTR","NU","NVDA",
-    "NVO","NVTS","NXPI","OKLO","ON","ONDS","OPEN","ORCL","OSCR","OWL",
+    "NVO","NVTS","NXPI","OKLO","ON","ONDS","OPEN","ORBS","ORCL","OSCR","OWL",
     "OXY","PAAS","PANW","PATH","PBR","PCG","PDD","PEP","PFE","PG",
     "PGR","PL","PLTR","PLUG","PSX","PTON","PYPL","PZZA","QBTS","QCOM",
     "QS","QUBT","QXO","RBLX","RCL","RDDT","RDW","RGTI","RIG","RIOT",
