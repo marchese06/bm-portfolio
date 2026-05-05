@@ -595,12 +595,13 @@ function buildClosedMetrics(){
   const decided=n-evens.length;
   const wr=decided>0?Math.round(wins.length/decided*100):0;
   const totalPnl=CLOSED.reduce((s,t)=>s+t.total_pnl,0);
-  const avgPnl=Math.round(totalPnl/n);
+  const totalCost=CLOSED.reduce((s,t)=>s+(t.actualCost||1000),0);
+  const roi=Math.round((totalPnl/totalCost)*100);
   const best=CLOSED.reduce((a,b)=>a.total_pnl>b.total_pnl?a:b);
   document.getElementById('closed-metrics').innerHTML=[
     {l:'Total Banked',v:dol(totalPnl),c:totalPnl>=0?'g':'r',s:`${n} closed positions`},
     {l:'Win Rate',v:wr+'%',c:'g',s:`${wins.length} wins · ${n-wins.length-evens.length} losses`},
-    {l:'Avg P&L',v:dol(avgPnl),c:avgPnl>=0?'g':'r',s:'per $1,000 deployed'},
+    {l:'ROI',v:roi+'%',c:roi>=0?'g':'r',s:'total return on capital deployed'},
     {l:'Best Exit',v:best.ticker,c:'o',s:dol(best.total_pnl)+' banked'},
     {l:'Trades',v:n,c:'',s:'closed · permanent record'},
   ].map(m=>`<div class="mc${m.c==='o'?' hi':''}"><div class="mc-label">${m.l}</div><div class="mc-val ${m.c}">${m.v}</div><div class="mc-sub">${m.s}</div></div>`).join('');
