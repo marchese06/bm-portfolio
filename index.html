@@ -511,9 +511,10 @@ function parseClosed(text){
     const contract=(c[7]||'').trim();
     const strike=num(c[6])||0;
     const close_date=(c[12]||'').trim();
+    const close_price=num(c[13])||null;
     const doubled=(c[11]||'').trim().toUpperCase();
     const status=(c[14]||'').trim()||'Closed';
-    const t={ticker,name:(c[2]||ticker).trim(),sector:(c[3]||'').trim(),industry:(c[4]||'').trim(),theme:(c[5]||'').trim(),entry_date,contract,strike,entry,current:max,max,max_pct,close_date,close_price:max,doubled,status};
+    const t={ticker,name:(c[2]||ticker).trim(),sector:(c[3]||'').trim(),industry:(c[4]||'').trim(),theme:(c[5]||'').trim(),entry_date,contract,strike,entry,current:max,max,max_pct,close_date,close_price,doubled,status};
     Object.assign(t,calcPnlClosed(t));
     trades.push(t);
   }
