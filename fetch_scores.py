@@ -24,7 +24,7 @@ TICKERS = [
     "CPRI","CRCL","CRCL","CRDO","CRM","CRML","CRWD","CRWV","CSCO","CSX","CTRA",
     "CVE","CVI","CVNA","CVS","CVX","DAL","DELL","DINO","DIS","DOW",
     "DUOL","DVN","EH","ELF","ENPH","ENVX","EOSE","EQT","EQX","ET",
-    "EXE","F","FANG","FCX","FIG","FIG","FLEX","FLY","FRMI","FRMI","FSLR","FSLY",
+    "EXE","F","FANG","FCX","FIG","FIG","FLEX","FLY","FRMI","FRMI","FRMI","FSLR","FSLY",
     "FTAI","GE","GFS","GIS","GLW","GLXY","GM","GME","GOOG","GOOGL",
     "GRPN","GS","GSK","GT","HAL","HCA","HD","HIMS","HIVE","HL",
     "HON","HOOD","HPE","HPQ","HUM","HUT","IAG","IBM","IBRX","INDI",
