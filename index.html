@@ -575,54 +575,6 @@ function parseOpen(text){
   return trades;
 }
 
-    // Newer format: O | NOTES/CONTRACT_VALUE | Ticker | Name | Sector | Industry | Theme | C/S Price | EntryDate | EmailTime | Expiration | Strike | C/P | Contract | Entry$ | Current$ | Max$ | Curr% | Max% | ... | Status
-    let ticker=(c[2]||'').trim();
-    if(!ticker||!/^[A-Z]{1,6}$/.test(ticker)) continue;
-    if(['TICKER','STOCK','SECTOR','X','O','YES','NO'].includes(ticker)) continue;
-
-    const entry=num(c[14]);
-    if(!entry||entry<=0) continue;
-    const current_val=num(c[15]);
-    const max_val=num(c[16]);
-    const max=max_val||current_val||entry;
-
-    // Status is typically last meaningful column — find it
-    let status='Open';
-    for(let i=c.length-1;i>=20;i--){
-      const v=(c[i]||'').trim();
-      if(['Open','1/2 Open','Closed','Rolled'].some(s=>v.includes(s))){status=v;break;}
-    }
-
-    const entry_date=(c[8]||'').trim();
-    const expiration=(c[10]||'').trim();
-    const strike=num(c[11])||0;
-    const cp=(c[12]||'').trim();
-    const contract=(c[13]||'').trim();
-    const optionSymbol=buildSymbol(ticker,expiration,entry_date,strike,cp);
-
-    const t={
-      ticker,
-      name:(c[3]||ticker).trim(),
-      sector:(c[4]||'').trim(),
-      industry:(c[5]||'').trim(),
-      theme:(c[6]||'').trim(),
-      entry_date,
-      contract,
-      strike,
-      entry,
-      current:current_val||max||entry,
-      max,
-      curr_pct:pct(c[17])||0,
-      max_pct:pct(c[18])||0,
-      status:status.includes('1/2')?'1/2 Open':'Open',
-      optionSymbol,
-    };
-    Object.assign(t,calcPnl(t));
-    trades.push(t);
-  }
-  return trades;
-}
-
 // ── Parse CLOSED CSV ─────────────────────────────────────────────────────────
 // CLEAN CLOSED tab columns (A-P, zero-based):
 // [0]=EntryDate, [1]=Ticker, [2]=Name, [3]=Sector, [4]=Industry, [5]=Theme
@@ -1214,10 +1166,6 @@ async function loadSqFromCache(){
 }
 
 // Squeeze tab auto-load is integrated into switchTab above
-
-// ── Boot ──────────────────────────────────────────────────────────────────────
-loadAll();
-setInterval(loadAll, 5*60*1000);
 
 // ── Boot ──────────────────────────────────────────────────────────────────────
 loadAll();
