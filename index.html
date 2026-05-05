@@ -201,6 +201,7 @@
 <div class="page" id="page-closed">
   <div class="metrics" id="closed-metrics"><div class="loading">Loading closed trades...</div></div>
   <div class="charts" id="closed-charts" style="margin-bottom:20px;"></div>
+  <div id="multiplier-rates" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;"></div>
   <div class="controls">
     <span class="ctrl-label">Filter:</span>
     <div id="closed-filters" style="display:flex;gap:6px;flex-wrap:wrap;"></div>
@@ -555,7 +556,7 @@ async function loadData(){
   const ps=document.getElementById('price-status');
   if(ps){ ps.textContent='using sheet data'; ps.className='price-status done'; }
   buildMetrics(); buildCharts(); buildFilters(); render();
-  buildClosedMetrics(); buildClosedCharts(); buildClosedFilters(); renderClosed();
+  buildClosedMetrics(); buildMultiplierRates(); buildClosedCharts(); buildClosedFilters(); renderClosed();
   if(ACTIVE.length) await fetchAllPrices(ACTIVE);
 }
 
@@ -585,6 +586,22 @@ function buildMetrics(){
     {l:'Best Trade',v:best.ticker,c:'o',s:dol(best.total_pnl)+' net P&L'},
     {l:'Positions',v:n,c:'',s:'active · live prices'},
   ].map(m=>`<div class="mc${m.c==='o'?' hi':''}"><div class="mc-label">${m.l}</div><div class="mc-val ${m.c}">${m.v}</div><div class="mc-sub">${m.s}</div></div>`).join('');
+}
+
+function buildMultiplierRates(){
+  const n=CLOSED.length;
+  if(!n){ document.getElementById('multiplier-rates').innerHTML=''; return; }
+  const rates=[2,3,4,5,10].map(x=>{
+    const threshold=(x-1)*100; // 2x=100%, 3x=200%, 4x=300% etc
+    const count=CLOSED.filter(t=>t.max_pct>=threshold).length;
+    const pct=Math.round(count/n*100);
+    const col=x>=5?'var(--gold)':x>=3?'var(--green)':'var(--blue)';
+    return `<div style="display:inline-flex;align-items:center;gap:6px;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:6px 14px;">
+      <span style="font-family:var(--mono);font-size:13px;color:var(--text3)">${x}x Rate</span>
+      <span style="font-family:var(--mono);font-size:18px;font-weight:700;color:${col}">${pct}%</span>
+    </div>`;
+  });
+  document.getElementById('multiplier-rates').innerHTML=rates.join('');
 }
 
 function buildClosedMetrics(){
