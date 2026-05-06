@@ -4,7 +4,10 @@
 <script>
   // Only render when embedded in an iframe
   if (window.self === window.top) {
-    document.documentElement.innerHTML = '<html><body style="background:#000;"></body></html>';
+    document.addEventListener('DOMContentLoaded', function() {
+      document.body.innerHTML = '';
+      document.body.style.background = '#000';
+    });
   }
 </script>
 <meta charset="UTF-8">
