@@ -619,7 +619,6 @@ function buildClosedMetrics(){
   const totalPnl=CLOSED.reduce((s,t)=>s+t.total_pnl,0);
   const totalCost=CLOSED.reduce((s,t)=>s+(t.actualCost||1000),0);
   const roi=Math.round((totalPnl/totalCost)*100);
-  const best=CLOSED.reduce((a,b)=>a.total_pnl>b.total_pnl?a:b);
   document.getElementById('closed-metrics').innerHTML=[
     {l:'Total Profits',v:dol(totalPnl),c:totalPnl>=0?'g':'r',s:`${n} closed positions`},
     {l:'Win Rate',v:wr+'%',c:'g',s:`${wins.length} wins · ${n-wins.length-evens.length} losses`},
@@ -691,8 +690,6 @@ function buildClosedCharts(){
           sorted.map(([,v])=>`<div style="flex:1;text-align:center;font-family:var(--mono);font-size:10px;color:var(--text3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${v.label}</div>`).join('')+
           '</div>'+
         '</div>';
-      })()}</div>`;
-          }).join('')+'</div>';
       })()}</div>`;
 }
 
