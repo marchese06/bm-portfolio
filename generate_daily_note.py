@@ -91,7 +91,7 @@ def build_context(scores, portfolio):
     hot_lines  = "\n".join([f"  {s}: Daily={d['st']['score']:.1f}, Weekly={d.get('lt',{}).get('score',0):.1f}, Regime={get_regime(d)}" for s,d in hot[:12]])
     warm_lines = "\n".join([f"  {s}: Daily={d['st']['score']:.1f}, Regime={get_regime(d)}" for s,d in warm[:8]])
     port_lines = "\n".join([
-        f"  {p['ticker']} ({p['theme']}): Entry=${p['entry']:.2f}, Max={p['max_pct']:.0f}%, Squeeze={p['st'] or 'N/A':.1f}, Regime={p['regime']}, {'SOLD 50% AT 2x' if p['doubled'] else 'FULL POSITION'}"
+        f"  {p['ticker']} ({p['theme']}): Entry=${p['entry']:.2f}, Max={p['max_pct']:.0f}%, Squeeze={p['st'] if p['st'] else 'N/A'}, Regime={p['regime']}, {'SOLD 50% AT 2x' if p['doubled'] else 'FULL POSITION'}"
         for p in port_enriched
     ])
     dd_lines   = "\n".join([f"  {p['ticker']}: Squeeze={p['st']:.1f}, Regime={p['regime']} — already sold 50% at 2x" for p in double_dn])
