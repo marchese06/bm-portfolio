@@ -33,7 +33,7 @@
   .nav-tab:hover{color:var(--text);}
   .nav-tab.active{color:var(--green);border-bottom-color:var(--green);}
   .page{display:none;}.page.active{display:block;}
-  .metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:10px;margin-bottom:20px;}
+  .metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;margin-bottom:20px;}
   .mc{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:13px 15px;transition:border-color 0.2s;}
   .mc:hover{border-color:var(--border2);}.mc.hi{border-color:rgba(0,229,160,0.3);background:rgba(0,229,160,0.05);}
   .mc-label{font-family:var(--mono);font-size:15px;color:var(--text3);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px;}
@@ -624,7 +624,7 @@ function buildClosedMetrics(){
     {l:'Win Rate',v:wr+'%',c:'g',s:`${wins.length} wins · ${n-wins.length-evens.length} losses`},
     {l:'ROI',v:roi+'%',c:roi>=0?'g':'r',s:'$'+totalCost.toLocaleString()+' total deployed'},
     
-    {l:'Trades',v:n,c:'',s:'closed · permanent record'},
+    
   ].map(m=>`<div class="mc${m.c==='o'?' hi':''}"><div class="mc-label">${m.l}</div><div class="mc-val ${m.c}">${m.v}</div><div class="mc-sub">${m.s}</div></div>`).join('');
 }
 
@@ -673,7 +673,7 @@ function buildClosedCharts(){
         const sorted=Object.entries(months).sort((a,b)=>a[0].localeCompare(b[0]));
         if(!sorted.length) return '<div style="color:var(--text3);font-family:var(--mono);font-size:12px;padding:20px 0">No closed trades yet</div>';
         const maxAbs=Math.max(...sorted.map(([,v])=>Math.abs(v.pnl)))||1;
-        const barH=60;
+        const barH=100;
         return '<div style="display:flex;flex-direction:column;gap:0;">' +
           '<div style="display:flex;align-items:flex-end;gap:4px;height:'+barH+'px;border-bottom:1px solid var(--border);padding-bottom:0;">'+
           sorted.map(([,v])=>{
@@ -687,7 +687,7 @@ function buildClosedCharts(){
           }).join('')+
           '</div>'+
           '<div style="display:flex;gap:4px;border-top:none;padding-top:4px;">'+
-          sorted.map(([,v])=>`<div style="flex:1;text-align:center;font-family:var(--mono);font-size:10px;color:var(--text3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${v.label}</div>`).join('')+
+          sorted.map(([,v])=>`<div style="flex:1;text-align:center;font-family:var(--mono);font-size:13px;color:var(--text3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${v.label}</div>`).join('')+
           '</div>'+
         '</div>';
       })()}</div>`;
