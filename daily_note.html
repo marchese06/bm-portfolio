@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Breakout Multiplier · Daily Note</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#0a0b0e;--surface:#111318;--surface2:#181c24;--border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.16);--text:#f0f2f8;--text2:#c8cdd8;--text3:#a0a8b8;--green:#00e5a0;--blue:#5b8cff;--red:#ff4d6d;--gold:#f5c842;--mono:'Space Mono',monospace;--sans:'DM Sans',sans-serif;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:16px;min-height:100vh;overflow-x:hidden;}
+  body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,229,160,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,160,0.02) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0;}
+  .wrap{max-width:800px;margin:0 auto;padding:40px 24px 80px;position:relative;z-index:1;}
+
+  header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:40px;flex-wrap:wrap;gap:12px;}
+  .logo{font-family:var(--mono);font-size:13px;color:var(--green);letter-spacing:0.2em;text-transform:uppercase;}
+  .hdr-right{text-align:right;}
+  .date-badge{font-family:var(--mono);font-size:12px;color:var(--text3);letter-spacing:0.1em;}
+  .live{display:inline-flex;align-items:center;gap:6px;background:rgba(0,229,160,0.1);border:1px solid rgba(0,229,160,0.25);border-radius:20px;padding:3px 10px;font-size:12px;font-family:var(--mono);color:var(--green);margin-top:6px;}
+  .live-dot{width:5px;height:5px;border-radius:50%;background:var(--green);animation:pulse 2s infinite;}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
+
+  .note-header{margin-bottom:32px;border-bottom:1px solid var(--border);padding-bottom:24px;}
+  .note-label{font-family:var(--mono);font-size:11px;color:var(--text3);letter-spacing:0.15em;text-transform:uppercase;margin-bottom:8px;}
+  .note-date{font-size:28px;font-weight:600;letter-spacing:-0.02em;color:var(--text);}
+
+  .stats{display:flex;gap:12px;margin-bottom:40px;flex-wrap:wrap;}
+  .stat{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px 16px;font-family:var(--mono);}
+  .stat-val{font-size:20px;font-weight:700;color:var(--green);}
+  .stat-lbl{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:0.1em;margin-top:2px;}
+
+  .note-body{line-height:1.8;font-size:17px;color:var(--text2);}
+  .note-body p{margin-bottom:20px;}
+  .note-body strong{color:var(--text);font-weight:600;}
+  .note-body em{color:var(--gold);font-style:normal;}
+
+  .loading{text-align:center;padding:80px;font-family:var(--mono);color:var(--text3);font-size:14px;}
+  .error{background:rgba(255,77,109,0.08);border:1px solid rgba(255,77,109,0.25);border-radius:8px;padding:16px;font-family:var(--mono);font-size:13px;color:var(--red);margin-top:24px;}
+
+  .divider{height:1px;background:var(--border);margin:40px 0;}
+
+  footer{margin-top:48px;padding-top:16px;border-top:1px solid var(--border);font-family:var(--mono);font-size:11px;color:rgba(255,255,255,0.18);letter-spacing:0.08em;}
+
+  ::-webkit-scrollbar{width:4px;}::-webkit-scrollbar-track{background:var(--surface);}::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.14);border-radius:2px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo">Breakout Multiplier</div>
+    <div class="hdr-right">
+      <div class="date-badge" id="hdr-date">—</div>
+      <div class="live"><span class="live-dot"></span>DAILY NOTE</div>
+    </div>
+  </header>
+
+  <div id="content"><div class="loading">Loading today's note...</div></div>
+
+  <footer id="footer"></footer>
+</div>
+
+<script>
+async function loadNote() {
+  const el = document.getElementById('content');
+  try {
+    const r = await fetch('daily_note.json?t=' + Date.now());
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    const d = await r.json();
+
+    // Set date
+    document.getElementById('hdr-date').textContent = d.display_date?.toUpperCase() || '';
+    document.getElementById('footer').textContent =
+      `BREAKOUT MULTIPLIER · GENERATED ${d.date ? new Date(d.date).toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',timeZoneName:'short'}) : ''} · FOR MEMBERS ONLY`;
+
+    // Render note
+    // Convert markdown bold **text** to <strong>
+    let noteHtml = d.note
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      .split('\n\n')
+      .filter(p => p.trim())
+      .map(p => `<p>${p.trim().replace(/\n/g, ' ')}</p>`)
+      .join('');
+
+    el.innerHTML = `
+      <div class="note-header">
+        <div class="note-label">Pre-market note</div>
+        <div class="note-date">${d.display_date || ''}</div>
+      </div>
+      <div class="stats">
+        <div class="stat"><div class="stat-val">${d.hot_count || 0}</div><div class="stat-lbl">HOT setups</div></div>
+        <div class="stat"><div class="stat-val">${d.warm_count || 0}</div><div class="stat-lbl">WARM setups</div></div>
+        <div class="stat"><div class="stat-val">${d.portfolio_count || 0}</div><div class="stat-lbl">Active positions</div></div>
+      </div>
+      <div class="note-body">${noteHtml}</div>
+    `;
+  } catch(e) {
+    el.innerHTML = `<div class="error">⚠ Could not load today's note: ${e.message}<br><br>Run the GitHub Actions workflow first to generate daily_note.json</div>`;
+  }
+}
+
+loadNote();
+</script>
+</body>
+</html>
