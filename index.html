@@ -694,6 +694,13 @@ function buildClosedCharts(){
   `;
 }
 
+function buildFilters(){
+  const themes=[...new Set(ACTIVE.map(t=>t.theme||t.sector).filter(Boolean))];
+  const fs=['All','Winners','Losers','Hit 2x','Fully Closed','1/2 Open','Full Open',...themes];
+  document.getElementById('filters').innerHTML=fs.map(f=>`<button class="fbtn${f===aFilt?' on':''}" onclick="setAF('${f}')">${f}</button>`).join('');
+}
+function setAF(f){aFilt=f;buildFilters();render();}
+
 function buildClosedFilters(){
   const themes=[...new Set(CLOSED.map(t=>t.theme||t.sector).filter(Boolean))];
   const fs=['All','Winners','Losers',...themes];
