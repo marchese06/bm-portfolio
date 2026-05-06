@@ -680,9 +680,9 @@ function buildClosedCharts(){
             const col=v.pnl>=0?'var(--green)':'var(--red)';
             const tip=v.pnl>=0?'+$'+v.pnl.toLocaleString():'-$'+Math.abs(v.pnl).toLocaleString();
             return`<div style="display:flex;flex-direction:column;align-items:center;flex:1;gap:2px;" title="${tip}">
-              <div style="font-family:var(--mono);font-size:9px;color:${col}">${tip}</div>
+              <div style="font-family:var(--mono);font-size:11px;font-weight:700;color:${col}">${tip}</div>
               <div style="width:100%;height:${h}px;background:${col};border-radius:2px 2px 0 0;min-height:2px;"></div>
-              <div style="font-family:var(--mono);font-size:9px;color:var(--text3);white-space:nowrap">${v.label}</div>
+              <div style="font-family:var(--mono);font-size:11px;color:var(--text3);white-space:nowrap">${v.label}</div>
             </div>`;
           }).join('')+'</div>';
       })()}</div>`;
