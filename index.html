@@ -624,7 +624,7 @@ function buildClosedMetrics(){
     {l:'Total Profits',v:dol(totalPnl),c:totalPnl>=0?'g':'r',s:`${n} closed positions`},
     {l:'Win Rate',v:wr+'%',c:'g',s:`${wins.length} wins · ${n-wins.length-evens.length} losses`},
     {l:'ROI',v:roi+'%',c:roi>=0?'g':'r',s:'$'+totalCost.toLocaleString()+' total deployed'},
-    {l:'Best Exit',v:best.ticker,c:'o',s:dol(best.total_pnl)+' banked'},
+    
     {l:'Trades',v:n,c:'',s:'closed · permanent record'},
   ].map(m=>`<div class="mc${m.c==='o'?' hi':''}"><div class="mc-label">${m.l}</div><div class="mc-val ${m.c}">${m.v}</div><div class="mc-sub">${m.s}</div></div>`).join('');
 }
@@ -674,16 +674,24 @@ function buildClosedCharts(){
         const sorted=Object.entries(months).sort((a,b)=>a[0].localeCompare(b[0]));
         if(!sorted.length) return '<div style="color:var(--text3);font-family:var(--mono);font-size:12px;padding:20px 0">No closed trades yet</div>';
         const maxAbs=Math.max(...sorted.map(([,v])=>Math.abs(v.pnl)))||1;
-        return '<div style="display:flex;align-items:flex-end;gap:6px;height:110px;padding-bottom:20px;">'+
+        const barH=60;
+        return '<div style="display:flex;flex-direction:column;gap:0;">' +
+          '<div style="display:flex;align-items:flex-end;gap:4px;height:'+barH+'px;border-bottom:1px solid var(--border);padding-bottom:0;">'+
           sorted.map(([,v])=>{
-            const h=Math.round(Math.abs(v.pnl)/maxAbs*80);
+            const h=Math.round(Math.abs(v.pnl)/maxAbs*barH);
             const col=v.pnl>=0?'var(--green)':'var(--red)';
-            const tip=v.pnl>=0?'+$'+v.pnl.toLocaleString():'-$'+Math.abs(v.pnl).toLocaleString();
-            return`<div style="display:flex;flex-direction:column;align-items:center;flex:1;gap:2px;" title="${tip}">
-              <div style="font-family:var(--mono);font-size:11px;font-weight:700;color:${col}">${tip}</div>
+            const tip=(v.pnl>=0?'+$':'-$')+Math.abs(v.pnl).toLocaleString();
+            return`<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;" title="${tip}">
+              <div style="font-family:var(--mono);font-size:10px;font-weight:700;color:${col};margin-bottom:3px;">${tip}</div>
               <div style="width:100%;height:${h}px;background:${col};border-radius:2px 2px 0 0;min-height:2px;"></div>
-              <div style="font-family:var(--mono);font-size:11px;color:var(--text3);white-space:nowrap">${v.label}</div>
             </div>`;
+          }).join('')+
+          '</div>'+
+          '<div style="display:flex;gap:4px;border-top:none;padding-top:4px;">'+
+          sorted.map(([,v])=>`<div style="flex:1;text-align:center;font-family:var(--mono);font-size:10px;color:var(--text3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${v.label}</div>`).join('')+
+          '</div>'+
+        '</div>';
+      })()}</div>`;
           }).join('')+'</div>';
       })()}</div>`;
 }
