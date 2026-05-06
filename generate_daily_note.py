@@ -150,9 +150,9 @@ def build_note(scores, portfolio):
             regime_str = f"regime is {reg}" + (f" ({ago})" if ago else "")
 
             setup_comments = [
-                f"$**{sym}** is printing a daily squeeze score of {st:.1f} with the weekly at {lt:.1f}. RSI sitting at {rsi:.1f}, {regime_str}. The compression here is real — this is the kind of coil that precedes a move.",
-                f"$**{sym}** — daily squeeze at {st:.1f}, weekly at {lt:.1f}, RSI {rsi:.1f}. {regime_str.capitalize()}. It doesn't get cleaner than this.",
-                f"Look at $**{sym}**. Daily squeeze {st:.1f}, weekly {lt:.1f}. RSI at {rsi:.1f} and the {regime_str}. That's leadership. That's what you want to see.",
+                f"$**{sym}** is printing a daily squeeze score of {st:.1f} with the weekly at {lt:.1f}. {regime_str.capitalize()}. The compression here is real — this is the kind of coil that precedes a move.",
+                f"$**{sym}** — daily squeeze at {st:.1f}, weekly at {lt:.1f}. {regime_str.capitalize()}. It doesn't get cleaner than this.",
+                f"Look at $**{sym}**. Daily squeeze {st:.1f}, weekly {lt:.1f}. {regime_str.capitalize()}. That's leadership. That's what you want to see.",
             ]
             lines.append(random.choice(setup_comments))
             lines.append("")
@@ -165,8 +165,8 @@ def build_note(scores, portfolio):
             st_str  = f"{p['st']:.1f}" if p['st'] else "N/A"
             rsi_str = f"{p['rsi']:.1f}" if p['rsi'] else "N/A"
             actionable_comments = [
-                f"$**{p['ticker']}** ({p['theme']}) entered at ${p['entry']:.2f} — still HOT with a squeeze score of {st_str} and RSI at {rsi_str}. Regime is {p['regime']}. If you missed the initial entry this one is still actionable. The setup hasn't broken down.",
-                f"$**{p['ticker']}** is still in play. Squeeze at {st_str}, RSI {rsi_str}, {p['regime']} regime. Entry was ${p['entry']:.2f} — the compression is still building. Not too late.",
+                f"$**{p['ticker']}** ({p['theme']}) entered at ${p['entry']:.2f} — still HOT with a squeeze score of {st_str}. Regime is {p['regime']}. If you missed the initial entry this one is still actionable. The setup hasn't broken down.",
+                f"$**{p['ticker']}** is still in play. Squeeze at {st_str}, {p['regime']} regime. Entry was ${p['entry']:.2f} — the compression is still building. Not too late.",
                 f"Members who passed on $**{p['ticker']}** — the squeeze score is {st_str} and regime is still {p['regime']}. The original thesis is intact. ${p['entry']:.2f} entry, and the setup is tighter now than when we flagged it.",
             ]
             lines.append(random.choice(actionable_comments))
