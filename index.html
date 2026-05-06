@@ -1,6 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script>
+  // Only render when embedded in an iframe
+  if (window.self === window.top) {
+    document.documentElement.innerHTML = '<html><body style="background:#000;"></body></html>';
+  }
+</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Breakout Multiplier</title>
