@@ -6,7 +6,9 @@ on:
     - cron: '30 13 * * 1-5'
     - cron: '0,30 14-19 * * 1-5'
     - cron: '0 20 * * 1-5'
-  workflow_dispatch:   # also allow manual trigger from GitHub Actions tab
+    # Weekend keepalive — keeps repo active so GitHub doesn't disable the schedule
+    - cron: '0 14 * * 6'
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -24,9 +26,9 @@ jobs:
           python-version: '3.11'
 
       - name: Install dependencies
-        run: pip install requests
+        run: pip install requests yfinance
 
-      - name: Fetch squeeze scores
+      - name: Update Squeeze Scores
         env:
           TD_KEY: ${{ secrets.TD_KEY }}
         run: python fetch_scores.py
